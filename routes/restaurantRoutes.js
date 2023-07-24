@@ -10,6 +10,8 @@ router
 
 router.route('/within').get( restaurantController.getRestaurantsWithin)
 
+router.route('/near').get(restaurantController.getNear)
+
 router
   .route('/:id')
   .get(restaurantController.getRestaurantById)

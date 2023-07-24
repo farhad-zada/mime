@@ -29,6 +29,7 @@ exports.getRestaurantsWithin = async (req, res, next) => {
     distanceMultiplier: 1,
     maxDistance: dist * 1,
     includeLocs: "dist.location",
+    // query: {slug: {$gt: 's'}},
     spherical: true,
   }},
 {$project: {name: 1, dist: 1}}])
@@ -43,6 +44,39 @@ exports.getRestaurantsWithin = async (req, res, next) => {
 
 }
 
+exports.getNear = async (req, res, next) => {
+  const {lng, lat, dist} = req.query
+
+  if (!lng | !lat | !dist) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Please, enter longitude and latitude and the radius.'
+    })
+  }
+
+  // let restaurants = await Restaurant.find({});
+
+  const restaurants = await Restaurant.find({
+    location: {
+      $near: {
+        $maxDistance: dist * 1,
+        $geometry: {
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1]
+        }
+      }
+    }
+  }).lean().exec()
+
+
+  res.status(200).json({
+    status: 'success', 
+    results: restaurants.length,
+    data: {
+      restaurants,
+    }
+  })
+}
 
 exports.getRestaurantById = async (req, res, next) => {
   const id = req.params.id
@@ -85,3 +119,9 @@ exports.deleteRestaurant = async (req, res, next) => {
     .json({ status: "success", message: "Restaurant successfully deleted." })
 }
 
+exports.getRecommended = async (req, res, next) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'This route not been implemented yet!' 
+  })
+}
