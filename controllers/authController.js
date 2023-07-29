@@ -123,7 +123,7 @@ exports.authed = catchAsync(async (req, res, next) => {
     )
   }
 
-  if (user.passwordChangedAt > decoded.iat) {
+  if (user.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError('User credidentials expired. Please, log in again.', 401),
     )
@@ -169,10 +169,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   //TODO: add email here
 })
 
-//TODO: Update password
-
-//TODO: Reset password
-
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const { token } = req.params
   const { password, passwordConfirm } = req.body
@@ -195,5 +191,35 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   await user.save()
 
-  res.status(200).json({ status: 'success' })
+  createSendToken(user, 200, res)
+})
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword, password, passwordConfirm } = req.body
+
+  const user = await User.findById(req.user.id).select('+password')
+
+  if (!(await user.correctPassword(currentPassword, user.password))) {
+    return next(
+      new AppError(
+        'Your current password is incorrect. Please, try again.',
+        400,
+      ),
+    )
+  }
+
+  if (!(password && passwordConfirm)) {
+    return next(
+      new AppError(
+        'Please, enter your password and password confirmation.',
+        400,
+      ),
+    )
+  }
+
+  req.user.password = password
+  req.user.passwordConfirm = passwordConfirm
+  await req.user.save()
+
+  createSendToken(req.user, 200, res)
 })

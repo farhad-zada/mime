@@ -5,8 +5,9 @@ const router = express.Router()
 
 router.route('/signup').post(auth.signup)
 router.route('/login').get(auth.login)
-router.route('/logout').get(auth.logout)
+router.route('/logout').get(auth.authed, auth.logout)
 router.route('/forgotPassword').get(auth.forgotPassword)
-router.route('/resetPassword/:token').get(auth.resetPassword)
+router.route('/resetPassword/:token').post(auth.resetPassword)
+router.route('/updatePassword').post(auth.authed, auth.updatePassword)
 
 module.exports = router
