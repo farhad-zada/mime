@@ -78,7 +78,7 @@ userSchema.pre('save', async function (next) {
 })
 
 userSchema.pre('save', function (next) {
-  if (!this.isModified || this.isNew) return next()
+  if (!this.isModified || this.isNew || !this.password) return next()
 
   this.passwordChangedAt = Date.now() - 1000
   next()
@@ -89,7 +89,12 @@ userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } })
   next()
 })
-
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  password,
+) {
+  return await bcrypt.compare(candidatePassword, password)
+}
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(

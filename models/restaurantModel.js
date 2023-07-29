@@ -12,6 +12,12 @@ restauranSchema = mongoose.Schema(
       ],
       minLength: [1, 'Restaurant name must have at least one charachter.'],
     },
+    //TODO: Make this required
+    owner: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      select: false,
+    },
     slug: String,
     reviewsCount: {
       type: Number,
@@ -31,7 +37,7 @@ restauranSchema = mongoose.Schema(
     },
     joinedAt: {
       type: Date,
-      default: Date.now()
+      default: Date.now(),
     },
     serviceStatus: {
       type: String,
@@ -61,7 +67,7 @@ restauranSchema = mongoose.Schema(
         enum: ['Point'],
       },
       coordinates: [Number],
-      formatted_address: String
+      formatted_address: String,
     },
     //details
     dressCode: [String],
@@ -78,18 +84,18 @@ restauranSchema = mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 )
 
-restauranSchema.index({location: '2dsphere'})
-restauranSchema.index({name: 1})
-restauranSchema.index({serviceStatus: 1})
-restauranSchema.index({paymentMethods: 1})
-restauranSchema.index({dressCode: 1})
-restauranSchema.index({active: 1})
+restauranSchema.index({ location: '2dsphere' })
+restauranSchema.index({ name: 1 })
+restauranSchema.index({ serviceStatus: 1 })
+restauranSchema.index({ paymentMethods: 1 })
+restauranSchema.index({ dressCode: 1 })
+restauranSchema.index({ active: 1 })
 
 restauranSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, {lower: true})
+  this.slug = slugify(this.name, { lower: true })
   next()
 })
 const Restaurant = mongoose.model('Restaurant', restauranSchema)

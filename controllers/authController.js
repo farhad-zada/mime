@@ -1,11 +1,17 @@
 const AppError = require('../utils/appError')
 const catchAsync = require('../utils/catchAsync')
 const jwt = require('jsonwebtoken')
-
+const { promisify } = require('util')
+require('dotenv').config()
 const User = require(`${__dirname}/../models/userModel`)
-//TODO: Restrict password hash to be not sent back
+const crypto = require('crypto')
+
+const validator = require('validator')
 
 const signToken = (id) => {
+  let x = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES,
+  })
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES,
   })
@@ -68,8 +74,8 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2. Check if user exists
   const user = await User.findOne({ email }).select('+password')
 
-  if (!user)
-    return next(new AppError('User bot found. Please enter a signed email.'))
+  if (!user || !(await user.correctPassword(password, user.password)))
+    return next(new AppError('Incorrect email or password!', 400))
 
   createSendToken(user, 200, res)
 })
@@ -87,6 +93,107 @@ exports.logout = (req, res) => {
   })
 }
 
-// TODO: protect
-// TODO: restrictTo
-// TODO: isLoggedIn
+exports.authed = catchAsync(async (req, res, next) => {
+  let token
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1]
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt
+  }
+
+  if (!token) {
+    return next(
+      new AppError('You are not logged in. To continue please log in.', 403),
+    )
+  }
+
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+
+  const user = await User.findById(decoded.id)
+
+  if (!user) {
+    return next(
+      new AppError(
+        'Incorrect credidentials. Please, log in with a valid account.',
+        401,
+      ),
+    )
+  }
+
+  if (user.passwordChangedAt > decoded.iat) {
+    return next(
+      new AppError('User credidentials expired. Please, log in again.', 401),
+    )
+  }
+
+  req.user = user
+  next()
+})
+
+exports.restrict = (...roles) => {
+  return (req, res, next) => {
+    // If the role of the user not allowed to reach this branch throw an error
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('Something went wrong!', 403))
+    }
+    // Else allow to continue
+    next()
+  }
+}
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body
+  if (!email) {
+    return next(new AppError('Request needs to include email at body.', 400))
+  }
+
+  if (!validator.isEmail(email)) {
+    return next(new AppError('Invalid email!', 400))
+  }
+
+  const user = await User.findOne({ email })
+
+  const resetToken = user.createPasswordResetToken()
+
+  await user.save({ validateBeforeSave: false })
+
+  const resetUrl = `${req.protocol}://${req.get(
+    'host',
+  )}/app/v1/user/resetPassword/${resetToken}`
+
+  res.json({ status: 'success', data: { resetUrl } })
+
+  //TODO: add email here
+})
+
+//TODO: Update password
+
+//TODO: Reset password
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  const { token } = req.params
+  const { password, passwordConfirm } = req.body
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+  const user = await User.findOne({ passwordResetToken: hashedToken })
+
+  if (!password || !passwordConfirm) {
+    return next(
+      new AppError(
+        'Please, enter your password and confirmation of the password',
+        400,
+      ),
+    )
+  }
+  user.password = password
+  user.passwordConfirm = passwordConfirm
+  user.passwordResetToken = undefined
+  user.passwordResetExpires = undefined
+
+  await user.save()
+
+  res.status(200).json({ status: 'success' })
+})
