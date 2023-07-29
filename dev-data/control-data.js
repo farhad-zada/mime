@@ -1,15 +1,15 @@
-const mongoose = require("mongoose")
-const fs = require('fs');
-require("dotenv").config()
+const mongoose = require('mongoose')
+const fs = require('fs')
+require('dotenv').config()
 
 const DB = process.env.DATABASE.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD,
 )
 
 mongoose.connect(DB, {})
 
-const Restaurant = require("../models/restaurantModel")
+const Restaurant = require('../models/restaurantModel')
 
 const deleteData = async () => {
   try {
@@ -19,16 +19,15 @@ const deleteData = async () => {
   }
   await mongoose.disconnect()
   process.exit()
-
 }
 
 const importData = async () => {
   let data = fs.readFileSync(`${__dirname}/data/data.json`)
   data = JSON.parse(data)
   let formatted_data = []
-  console.log('Getting data ready ⚙️');
+  console.log('Getting data ready ⚙️')
   for (let el of data) {
-    if (el.name === "Bottega Louie") {
+    if (el.name === 'Bottega Louie') {
       continue
     }
     formatted_data.push({
@@ -41,8 +40,8 @@ const importData = async () => {
       phones: el.phones,
       location: {
         coordinates: [el.location.geo_point.lng, el.location.geo_point.lat],
-        formatted_address: el.location.formatted_address
-      }
+        formatted_address: el.location.formatted_address,
+      },
     })
   }
   // for (let r of data){
@@ -50,24 +49,30 @@ const importData = async () => {
   //     console.log(r);
   //   }
   // }
-  console.log('Importing data ⛓️');
+  console.log('Importing data ⛓️')
   await Restaurant.create(formatted_data)
   await mongoose.disconnect()
-  console.log('Data imported successfully! ✨');
+  console.log('Data imported successfully! ✨')
 
   // console.log(formatted_data.length);
   // console.log(formatted_data[0]);
   process.exit()
-
 }
 
-if (process.argv[2] === "--delete") {
-  deleteData()
-} else if (process.argv[2] === '--import') {
-  importData()
-} else {
-  console.log('Please use either `--import` or `--delete`');
+const readData = (x) => {
+  let data = fs.readFileSync(`${__dirname}/data/data.json`)
+  data = JSON.parse(data)
+  console.log(data[x * 1].features.payment_options)
   process.exit()
 }
 
-
+if (process.argv[2] === '--delete') {
+  deleteData()
+} else if (process.argv[2] === '--import') {
+  importData()
+} else if (process.argv[2] == '--read') {
+  readData(process.argv[3] * 1)
+} else {
+  console.log('Please use either `--import` or `--delete`')
+  process.exit()
+}

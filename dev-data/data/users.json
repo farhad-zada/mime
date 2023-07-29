@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Farhad",
+        "email": "farhad.szd@gmail.com",
+        "password": "test1234",
+        "passwordConfirm": "test1234",
+        "photo": "https://i.pinimg.com/564x/73/f2/38/73f23869bc050729e40e1cbe905114a9.jpg"
+    },
+    {
+        "name": "Shole",
+        "email": "shole.hsn@gmail.com",
+        "password": "test1234",
+        "passwordConfirm": "test1234",
+        "photo": "https://i.pinimg.com/474x/42/2a/07/422a07016aca45fdf22c7cdc4cc40c2f.jpg"
+
+    },
+    {
+        "name": "Ahmed",
+        "email": "ahmed.hmd@gmail.com",
+        "password": "test1234",
+        "passwordConfirm": "test1234"
+    }
+]
