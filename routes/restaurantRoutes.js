@@ -2,7 +2,8 @@ const express = require('express')
 const restaurantController = require('../controllers/restaurantController')
 const auth = require(`${__dirname}/../controllers/authController`)
 const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
-// const menuRoutes = require(`${__dirname}/routes/menu`)
+const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
+const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)
 
 const router = express.Router()
 
@@ -12,6 +13,8 @@ router.use(auth.authed)
 
 // ALL review APIs are authed -> line: 9
 router.use('/:restaurantId/reviews', reviewRoutes)
+router.use('/:restaurantId/likes', unfoldNestedDetails, likesRoutes)
+
 // router.use('/:restaurantId/menu', menuRoutes)
 
 router
