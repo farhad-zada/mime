@@ -3,11 +3,14 @@ const morgan = require('morgan') // Not used
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const sanitizer = require('express-mongo-sanitize')
+//TODO:
 const xss = require('xss-clean')
+const cookieParser = require('cookie-parser')
 
 const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
+const auth = require(`${__dirname}/controllers/authController`)
 
 const app = express()
 
@@ -25,9 +28,16 @@ const limiter = rateLimit({
 })
 
 app.use('/', limiter)
+app.use(cookieParser())
 
+//TODO: app.use('/', auth.authed)
 app.use('/app/v1/restaurants', restaurantRoutes)
-app.use('/app/v1/reviews', reviewRoutes)
+app.use(
+  '/app/v1/reviews',
+  auth.authed,
+  auth.restrict('admin-mime'),
+  reviewRoutes,
+)
 app.use('/app/v1/user/', userRoutes)
 
 module.exports = app

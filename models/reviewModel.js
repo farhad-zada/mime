@@ -10,7 +10,7 @@ const reviewSchema = mongoose.Schema(
     to: {
       type: mongoose.Schema.ObjectId,
       refPath: 'modelName',
-      required: [true, 'A review must belong to a Restaurant or Menu item.'],
+      required: [true, 'A review must belong to a restaurant or menu item.'],
     },
     modelName: {
       type: String,
@@ -27,7 +27,8 @@ const reviewSchema = mongoose.Schema(
     },
     rating: {
       type: Number,
-      default: 4.5,
+      min: [1, 'Rating must be in range of 1 to 5'],
+      max: [5, 'Rating must be in range of 1 to 5'],
     },
     ts: {
       type: Date,
@@ -47,5 +48,5 @@ reviewSchema.index({ ts: 1 })
 reviewSchema.index({ modelName: 1 })
 
 const Review = mongoose.model('Review', reviewSchema)
-
+//TODO: integrate with Restaurant model
 module.exports = Review
