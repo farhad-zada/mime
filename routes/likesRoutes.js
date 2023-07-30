@@ -3,11 +3,10 @@ const express = require('express')
 
 const router = express.Router({ mergeParams: true })
 
-router.route('/like').post(likesController.like).delete(likesController.unlike)
-
 router
-  .route('/dislike')
-  .post(likesController.dislike)
-  .delete(likesController.undislike)
+  .route('/')
+  .get(likesController.getLikes)
+  .post(likesController.like)
+  .delete(likesController.unlike)
 
 module.exports = router

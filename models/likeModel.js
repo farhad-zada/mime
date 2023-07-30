@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const likeSchema = mongoose.Schema(
   {
-    by: {
+    from: {
       type: mongoose.Schema.ObjectId,
       ref: 'user',
       required: [true, 'User ID needed to like.'],
@@ -15,7 +15,8 @@ const likeSchema = mongoose.Schema(
       type: String,
       enum: {
         values: ['like', 'unlike', 'dislike', 'undislike'],
-        message: 'Status either like, unlike, dislike or undislike.',
+        message:
+          'Status either like, unlike, dislike or undislike.',
       },
     },
     modelName: {
@@ -23,13 +24,17 @@ const likeSchema = mongoose.Schema(
       enum: ['Restaurant', 'MenuItem'],
       required: [true, 'You need to specify model name!'],
     },
+    ts: {
+      type: Date,
+      default: Date.now(),
+    },
   },
   {
     toJson: { virtuals: true },
     toObject: { virtuals: true },
   },
 )
-likeSchema.index({ by: 1 })
+likeSchema.index({ from: 1 })
 likeSchema.index({ to: 1 })
 likeSchema.index({ modelName: 1 })
 // Define the model

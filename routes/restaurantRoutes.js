@@ -12,8 +12,16 @@ router.use(auth.authed)
 // router.use(auth.restrict('admin-mime', 'user'))
 
 // ALL review APIs are authed -> line: 9
-router.use('/:restaurantId/reviews', reviewRoutes)
-router.use('/:restaurantId/likes', unfoldNestedDetails, likesRoutes)
+router.use(
+  '/:restaurantId/reviews',
+  unfoldNestedDetails,
+  reviewRoutes,
+)
+router.use(
+  '/:restaurantId/likes',
+  unfoldNestedDetails,
+  likesRoutes,
+)
 
 // router.use('/:restaurantId/menu', menuRoutes)
 
@@ -22,7 +30,9 @@ router
   .get(restaurantController.getAllRestaurants)
   .post(restaurantController.createRestaurant)
 
-router.route('/within').get(restaurantController.getRestaurantsWithin)
+router
+  .route('/within')
+  .get(restaurantController.getRestaurantsWithin)
 
 router.route('/near').get(restaurantController.getNear)
 
