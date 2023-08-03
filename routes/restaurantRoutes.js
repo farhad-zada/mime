@@ -4,6 +4,7 @@ const auth = require(`${__dirname}/../controllers/authController`)
 const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)
+const menuRoutes = require(`${__dirname}/menuRoutes`)
 
 const router = express.Router()
 
@@ -22,6 +23,8 @@ router.use(
   unfoldNestedDetails,
   likesRoutes,
 )
+
+router.use('/:restaurantId/menu', menuRoutes)
 
 // router.use('/:restaurantId/menu', menuRoutes)
 

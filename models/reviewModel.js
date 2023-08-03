@@ -10,11 +10,14 @@ const reviewSchema = mongoose.Schema(
     to: {
       type: mongoose.Schema.ObjectId,
       refPath: 'modelName',
-      required: [true, 'A review must belong to a restaurant or menu item.'],
+      required: [
+        true,
+        'A review must belong to a restaurant or menu item.',
+      ],
     },
     modelName: {
       type: String,
-      enum: ['Restaurant', 'MealItem'],
+      enum: ['Restaurant', 'Menu'],
       required: [
         true,
         'A review must explicitly show whether it belongs to a restaurant or menu item.',
@@ -22,7 +25,10 @@ const reviewSchema = mongoose.Schema(
     },
     text: {
       type: String,
-      maxLength: [900, 'A review should be less than or equal 900 charachters'],
+      maxLength: [
+        900,
+        'A review should be less than or equal 900 charachters',
+      ],
       required: [true, 'A review must have a text.'],
     },
     rating: {
