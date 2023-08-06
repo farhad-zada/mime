@@ -1,63 +1,62 @@
 const Restaurant = require('../models/restaurantModel')
+const APIFeatures = require(`${__dirname}/../utils/apiFeatures`)
+const catchAsync = require(`${__dirname}/../utils/catchAsync`)
+exports.getAllRestaurants = catchAsync(
+  async (req, res, next) => {
+    const features = new APIFeatures(
+      Restaurant.find(),
+      req.query,
+    )
+      .filter()
+      .limitFields()
+      .sort()
+      .paginate()
 
-exports.getAllRestaurants = async (req, res, next) => {
-  const limit = req.query.limit * 1 || 5
-  const restaurants = await Restaurant.find()
-    .limit(limit)
-    .select('name location profileImage')
+    const restaurants = await features.query
 
-  res.status(200).json({
-    status: 'success',
-    results: restaurants.length,
-    data: { restaurants },
-  })
-}
+    res.status(200).json({
+      status: 'success',
+      results: restaurants.length,
+      data: { restaurants },
+    })
+  },
+)
 
-exports.getRestaurantsWithin = async (req, res, next) => {
+exports.getNear = catchAsync(async (req, res, next) => {
   const { lng, lat, dist } = req.query
 
   if (!lng | !lat | !dist) {
     return res.status(404).json({
       status: 'fail',
-      message: 'Please, enter longitude and latitude and the radius.',
+      message:
+        'Please, enter longitude and latitude and the radius.',
     })
   }
 
-  const restaurants = await Restaurant.aggregate([
-    {
-      $geoNear: {
-        near: { type: 'Point', coordinates: [lng * 1, lat * 1] },
-        distanceField: 'dist.distance', // required
-        distanceMultiplier: 1,
-        maxDistance: dist * 1,
-        includeLocs: 'dist.location',
-        // query: {slug: {$gt: 's'}},
-        spherical: true,
+  const features = new APIFeatures(
+    Restaurant.find({
+      location: {
+        $near: {
+          $maxDistance: dist * 1,
+          $geometry: {
+            type: 'Point',
+            coordinates: [lng * 1, lat * 1],
+          },
+        },
       },
-    },
-    { $project: { name: 1, dist: 1 } },
-  ])
+    }),
+    req.query,
+  )
+    .filter('lng', 'lat', 'dist')
+    .limitFields('owner')
+    .sort()
+    .paginate(100)
 
-  res.status(200).json({
-    status: 'success',
-    results: restaurants.length,
-    data: {
-      restaurants,
-    },
-  })
-}
+  const restaurants = await features.query
 
-exports.getNear = async (req, res, next) => {
-  const { lng, lat, dist } = req.query
+  /*
 
-  if (!lng | !lat | !dist) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Please, enter longitude and latitude and the radius.',
-    })
-  }
-
-  // let restaurants = await Restaurant.find({});
+  If wanted it can be swithed:
 
   const restaurants = await Restaurant.find({
     location: {
@@ -70,8 +69,7 @@ exports.getNear = async (req, res, next) => {
       },
     },
   })
-    .lean()
-    .exec()
+  */
 
   res.status(200).json({
     status: 'success',
@@ -80,51 +78,51 @@ exports.getNear = async (req, res, next) => {
       restaurants,
     },
   })
-}
+})
 
-exports.getRestaurantById = async (req, res, next) => {
-  const id = req.params.id
-  if (!id) {
-    return next(new Error('No id included'))
-  }
+exports.getRestaurantById = catchAsync(
+  async (req, res, next) => {
+    const id = req.params.id
+    if (!id) {
+      return next(new Error('No id included'))
+    }
 
-  const restaurants = await Restaurant.findById(id)
+    const restaurants = await Restaurant.findById(id)
 
-  res.status(200).json({
-    status: 'success',
-    results: restaurants.length,
-    data: { restaurants },
-  })
-}
+    res.status(200).json({
+      status: 'success',
+      results: restaurants.length,
+      data: { restaurants },
+    })
+  },
+)
 
-exports.createRestaurant = async (req, res, next) => {
-  let restaurant
-  try {
+exports.createRestaurant = catchAsync(
+  async (req, res, next) => {
+    let restaurant
+
     //TODO: Restrict the body items can be added
     restaurant = await Restaurant.create(req.body)
-  } catch (e) {
-    return res.status(400).json({ status: 'fail', message: e })
-  }
-  res.status(201).json({
-    status: 'success',
-    data: {
-      restaurant,
-    },
-  })
-}
 
-exports.deleteRestaurant = async (req, res, next) => {
-  const restaurant = Restaurant.findByIdAndUpdate(req.params.id, {
-    active: 'deleted',
-  })
-  res
-    .status(204)
-    .json({ status: 'success', message: 'Restaurant successfully deleted.' })
-}
-
-exports.getRecommended = async (req, res, next) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'This route not been implemented yet!',
-  })
-}
+    res.status(201).json({
+      status: 'success',
+      data: {
+        restaurant,
+      },
+    })
+  },
+)
+exports.deleteRestaurant = catchAsync(
+  async (req, res, next) => {
+    const restaurant = Restaurant.findByIdAndUpdate(
+      req.params.id,
+      {
+        active: 'deleted',
+      },
+    )
+    res.status(204).json({
+      status: 'success',
+      message: 'Restaurant successfully deleted.',
+    })
+  },
+)

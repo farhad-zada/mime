@@ -5,22 +5,33 @@ restauranSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'A restaurant needs to have a name.'],
+      required: [
+        true,
+        'A restaurant needs to have a name.',
+      ],
       maxLength: [
         200,
         'Restaurant name must be less than or equal to 200 charachters.',
       ],
-      minLength: [1, 'Restaurant name must have at least one charachter.'],
+      minLength: [
+        1,
+        'Restaurant name must have at least one charachter.',
+      ],
     },
     //TODO: Make this required
     owner: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       select: false,
+      required: [
+        true,
+        "A restaurant's owner must be shown explicitly!",
+      ],
     },
     slug: String,
     reviewsCount: {
       type: Number,
+      lowercase: true,
       default: 0,
     },
     likesCount: {
@@ -44,7 +55,8 @@ restauranSchema = mongoose.Schema(
       default: 'open',
       enum: {
         values: ['open', 'closed', 'full'],
-        message: 'Service status should be one of `open`, `closed`,`full`.',
+        message:
+          'Service status should be one of `open`, `closed`,`full`.',
       },
     },
     weelchairEnterance: {
@@ -53,11 +65,17 @@ restauranSchema = mongoose.Schema(
     },
     paymentMethods: {
       type: [String],
-      required: [true, 'A restaurant needs to add payment methods.'],
+      required: [
+        true,
+        'A restaurant needs to add payment methods.',
+      ],
     },
     profileImage: {
       type: String,
-      required: [true, 'A restaurant needs to have profile image'],
+      required: [
+        true,
+        'A restaurant needs to have profile image',
+      ],
     },
     images: [String],
     location: {
@@ -80,6 +98,10 @@ restauranSchema = mongoose.Schema(
         message: `A restaurant's activity status should be explicitly showed.`,
       },
     },
+    admins: {
+      type: [mongoose.Schema.ObjectId],
+      select: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -98,6 +120,13 @@ restauranSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
   next()
 })
-const Restaurant = mongoose.model('Restaurant', restauranSchema)
+
+restauranSchema.post(/^find/, function (next) {
+  this.select('-owner -ad')
+})
+const Restaurant = mongoose.model(
+  'Restaurant',
+  restauranSchema,
+)
 
 module.exports = Restaurant

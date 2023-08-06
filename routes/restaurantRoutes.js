@@ -8,11 +8,6 @@ const menuRoutes = require(`${__dirname}/menuRoutes`)
 
 const router = express.Router()
 
-router.use(auth.authed)
-
-// router.use(auth.restrict('admin-mime', 'user'))
-
-// ALL review APIs are authed -> line: 9
 router.use(
   '/:restaurantId/reviews',
   unfoldNestedDetails,
@@ -26,22 +21,19 @@ router.use(
 
 router.use('/:restaurantId/menu', menuRoutes)
 
-// router.use('/:restaurantId/menu', menuRoutes)
-
 router
   .route('/')
   .get(restaurantController.getAllRestaurants)
   .post(restaurantController.createRestaurant)
-
-router
-  .route('/within')
-  .get(restaurantController.getRestaurantsWithin)
 
 router.route('/near').get(restaurantController.getNear)
 
 router
   .route('/:id')
   .get(restaurantController.getRestaurantById)
-  .delete(restaurantController.deleteRestaurant)
+  .delete(
+    auth.restaurantOwner,
+    restaurantController.deleteRestaurant,
+  )
 
 module.exports = router

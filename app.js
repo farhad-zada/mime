@@ -11,6 +11,8 @@ const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
 const auth = require(`${__dirname}/controllers/authController`)
+const globalErrorHandler = require(`${__dirname}/controllers/errorController`)
+const AppError = require(`${__dirname}/utils/appError`)
 
 const app = express()
 
@@ -30,14 +32,25 @@ const limiter = rateLimit({
 app.use('/', limiter)
 app.use(cookieParser())
 
-//TODO: app.use('/', auth.authed)
+app.use('/', auth.authed)
+
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
   '/app/v1/reviews',
-  auth.authed,
   auth.restrict('admin-mime'),
   reviewRoutes,
 )
+
 app.use('/app/v1/user/', userRoutes)
 
+app.all('*', (req, res, next) => {
+  return next(
+    new AppError(
+      `Can't find ${req.originalUrl} on this server!`,
+      404,
+    ),
+  )
+})
+
+app.use(globalErrorHandler)
 module.exports = app

@@ -1,7 +1,6 @@
 const MenuItem = require('../models/menuItemModel')
 const AppError = require(`${__dirname}/../utils/appError`)
 
-// const MenuSection = require(`${__dirname}/../models/menuSectionModel`)
 const cathcAsync = require(`${__dirname}/../utils/catchAsync`)
 
 // Add an item
@@ -57,7 +56,8 @@ exports.filterRequestData = cathcAsync(
       name: data.section,
       period: data.period - 1,
     })
-    console.log(belongy)
+
+    // console.log(belongy)
     if (!belongy) {
       return next(
         new AppError(
@@ -156,6 +156,4 @@ exports.updateOne = cathcAsync(async (req, res, next) => {
   })
 })
 
-// Get all items ( by filter )
-
-// Get a single item
+// Get all items ( by filter eg. ingreds contain)
