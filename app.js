@@ -32,7 +32,12 @@ const limiter = rateLimit({
 app.use('/', limiter)
 app.use(cookieParser())
 
-app.use('/', auth.authed)
+app.get('/', (req, res, ) => res.send('Hello world'))
+
+
+app.use('/app/v1/user/', userRoutes)
+
+// app.use('/', auth.authed)
 
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
@@ -41,7 +46,7 @@ app.use(
   reviewRoutes,
 )
 
-app.use('/app/v1/user/', userRoutes)
+
 
 app.all('*', (req, res, next) => {
   return next(
