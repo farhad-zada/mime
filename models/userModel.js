@@ -49,13 +49,13 @@ const userSchema = mongoose.Schema(
         message: 'Confirmation does not match the password.',
       },
     },
+    token: String,
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
     active: {
       type: Boolean,
-      default: true,
-      select: false,
+      default: false,
     },
   },
   {
