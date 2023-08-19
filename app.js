@@ -46,10 +46,13 @@ app.use(
 )
 
 app.all('*', (req, res, next) => {
-  console.log(req)
+  console.log(req.originalUrl, Date.now())
+
   return next(
     new AppError(
-      `Can't find ${req.originalUrl} on this server!`,
+      `Can't find https://${req.get('host')}/${
+        req.originalUrl
+      } on this server!`,
       404,
     ),
   )

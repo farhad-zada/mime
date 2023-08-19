@@ -1,35 +1,35 @@
+const AppError = require('../../utils/appError')
+const catchAsync = require('../../utils/catchAsync')
+require('dotenv').config()
+
 //TODO: test this
-exports.forgotPassword = catchAsync(
-  async (req, res, next) => {
-    const { email } = req.body
-    if (!email) {
-      return next(
-        new AppError(
-          'Request needs to include email at body.',
-          400,
-        ),
-      )
-    }
-
-    if (!validator.isEmail(email)) {
-      return next(new AppError('Invalid email!', 400))
-    }
-
-    const user = await User.findOne({ email })
-
-    const resetToken = user.createToken(
-      'passwordResetToken',
+module.exports = catchAsync(async (req, res, next) => {
+  const { email } = req.body
+  if (!email) {
+    return next(
+      new AppError(
+        'Request needs to include email at body.',
+        400,
+      ),
     )
+  }
 
-    await user.save({ validateBeforeSave: false })
+  if (!validator.isEmail(email)) {
+    return next(new AppError('Invalid email!', 400))
+  }
 
-    //RESET URL
-    const resetUrl = `${req.protocol}://${req.get(
-      'host',
-    )}/app/v1/user/resetPassword/${resetToken}`
+  const user = await User.findOne({ email })
 
-    res.json({ status: 'success', data: { resetUrl } })
+  const resetToken = user.createToken('passwordResetToken')
 
-    //TODO: add email here
-  },
-)
+  await user.save({ validateBeforeSave: false })
+
+  //RESET URL
+  const resetUrl = `${req.protocol}://${req.get(
+    'host',
+  )}/app/v1/user/resetPassword/${resetToken}`
+
+  res.json({ status: 'success', data: { resetUrl } })
+
+  //TODO: add email here
+})

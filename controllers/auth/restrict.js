@@ -1,4 +1,4 @@
-const AppError = require('../utils/appError')
+const AppError = require('../../utils/appError')
 require('dotenv').config()
 
 module.exports = (...roles) => {

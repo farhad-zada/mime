@@ -1,8 +1,8 @@
-const AppError = require('../utils/appError')
-const catchAsync = require('../utils/catchAsync')
+const AppError = require('../../utils/appError')
+const catchAsync = require('../../utils/catchAsync')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const User = require(`${__dirname}/../models/userModel`)
+const User = require(`${__dirname}/../../models/userModel`)
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

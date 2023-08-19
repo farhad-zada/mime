@@ -1,44 +1,42 @@
-const AppError = require('../utils/appError')
-const catchAsync = require('../utils/catchAsync')
+const AppError = require('../../utils/appError')
+const catchAsync = require('../../utils/catchAsync')
 require('dotenv').config()
-const User = require(`${__dirname}/../models/userModel`)
+const User = require(`${__dirname}/../../models/userModel`)
 
-exports.updatePassword = catchAsync(
-  async (req, res, next) => {
-    const { currentPassword, password, passwordConfirm } =
-      req.body
+module.exports = catchAsync(async (req, res, next) => {
+  const { currentPassword, password, passwordConfirm } =
+    req.body
 
-    const user = await User.findById(req.user.id).select(
-      '+password',
+  const user = await User.findById(req.user.id).select(
+    '+password',
+  )
+
+  if (
+    !(await user.correctPassword(
+      currentPassword,
+      user.password,
+    ))
+  ) {
+    return next(
+      new AppError(
+        'Your current password is incorrect. Please, try again.',
+        400,
+      ),
     )
+  }
 
-    if (
-      !(await user.correctPassword(
-        currentPassword,
-        user.password,
-      ))
-    ) {
-      return next(
-        new AppError(
-          'Your current password is incorrect. Please, try again.',
-          400,
-        ),
-      )
-    }
+  if (!(password && passwordConfirm)) {
+    return next(
+      new AppError(
+        'Please, enter your password and password confirmation.',
+        400,
+      ),
+    )
+  }
 
-    if (!(password && passwordConfirm)) {
-      return next(
-        new AppError(
-          'Please, enter your password and password confirmation.',
-          400,
-        ),
-      )
-    }
+  req.user.password = password
+  req.user.passwordConfirm = passwordConfirm
+  await req.user.save()
 
-    req.user.password = password
-    req.user.passwordConfirm = passwordConfirm
-    await req.user.save()
-
-    createSendToken(req.user, 200, res)
-  },
-)
+  createSendToken(req.user, 200, res)
+})

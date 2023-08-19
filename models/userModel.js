@@ -59,10 +59,11 @@ const userSchema = mongoose.Schema(
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    verificationExpires: Date,
     verificationToken: String,
     active: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     verified: {
       type: Boolean,
@@ -92,7 +93,12 @@ userSchema.pre('save', async function (next) {
 })
 
 userSchema.pre('save', function (next) {
-  if (!this.isModified || this.isNew || !this.password)
+  if (
+    !this.isModified ||
+    this.isNew ||
+    !this.password ||
+    !this.verified
+  )
     return next()
 
   this.passwordChangedAt = Date.now() - 1000
@@ -100,6 +106,10 @@ userSchema.pre('save', function (next) {
 })
 
 userSchema.pre(/^find/, function (next) {
+  const query = this.getQuery()
+  if (query.verificationToken) {
+    return next()
+  }
   // this point to the current query
   this.find({ active: true, verified: true })
   next()
@@ -126,18 +136,17 @@ userSchema.methods.changedPasswordAfter = function (
   return false
 }
 
-userSchema.methods.createToken = function (key) {
+userSchema.methods.createToken = function (key1, key2) {
   const token = crypto.randomBytes(32).toString('hex')
 
-  this.verificationToken = crypto
+  this[key1] = crypto
     .createHash('sha256')
     .update(token)
     .digest('hex')
 
-  // After 10 minutes the reset token created the token expires
-  console.log(this[key])
+  // After 10 minutes the token created the token expires
+  this[key2] = Date.now() + 10 * 60 * 1000
   // this.passwordResetExpires = Date.now() + 10 * 60 * 1000
-
   return token
 }
 
