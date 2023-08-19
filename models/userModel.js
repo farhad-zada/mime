@@ -15,14 +15,11 @@ const userSchema = mongoose.Schema(
         true,
         'Please, provide your email address.',
       ],
-      unique: [
-        true,
-        'Your email has already been used to sign up. Please, use another email address.',
-      ],
+      unique: true,
       lowercase: true,
       validate: [
         validator.isEmail,
-        'Please, provide a valid email address.',
+        'Please, provide a valid email.',
       ],
     },
     photo: String,
@@ -59,10 +56,10 @@ const userSchema = mongoose.Schema(
           'Confirmation does not match the password.',
       },
     },
-    token: String,
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    verificationToken: String,
     active: {
       type: Boolean,
       default: false,
@@ -129,18 +126,19 @@ userSchema.methods.changedPasswordAfter = function (
   return false
 }
 
-userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex')
+userSchema.methods.createToken = function (key) {
+  const token = crypto.randomBytes(32).toString('hex')
 
-  this.passwordResetToken = crypto
+  this.verificationToken = crypto
     .createHash('sha256')
-    .update(resetToken)
+    .update(token)
     .digest('hex')
 
   // After 10 minutes the reset token created the token expires
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000
+  console.log(this[key])
+  // this.passwordResetExpires = Date.now() + 10 * 60 * 1000
 
-  return resetToken
+  return token
 }
 
 const User = mongoose.model('User', userSchema)

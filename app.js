@@ -32,13 +32,12 @@ const limiter = rateLimit({
 app.use('/', limiter)
 app.use(cookieParser())
 
-app.get('/', (req, res, ) => res.send('Hello world'))
-
-
+app.get('/app/v1/', (req, res) => {
+  res.send('Hello')
+})
 app.use('/app/v1/user/', userRoutes)
 
-// app.use('/', auth.authed)
-
+// app.use(auth.authed)
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
   '/app/v1/reviews',
@@ -46,9 +45,8 @@ app.use(
   reviewRoutes,
 )
 
-
-
 app.all('*', (req, res, next) => {
+  console.log(req)
   return next(
     new AppError(
       `Can't find ${req.originalUrl} on this server!`,
