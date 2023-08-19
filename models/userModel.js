@@ -11,13 +11,19 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, 'Please, provide your email address.'],
+      required: [
+        true,
+        'Please, provide your email address.',
+      ],
       unique: [
         true,
         'Your email has already been used to sign up. Please, use another email address.',
       ],
       lowercase: true,
-      validate: [validator.isEmail, 'Please, provide a valid email address.'],
+      validate: [
+        validator.isEmail,
+        'Please, provide a valid email address.',
+      ],
     },
     photo: String,
     role: {
@@ -35,7 +41,10 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Please, provide a password.'],
-      minlength: [8, 'Password minimum length must be 8 charachters.'],
+      minlength: [
+        8,
+        'Password minimum length must be 8 charachters.',
+      ],
       select: false,
     },
     passwordConfirm: {
@@ -46,7 +55,8 @@ const userSchema = mongoose.Schema(
         validator: function (el) {
           return el === this.password
         },
-        message: 'Confirmation does not match the password.',
+        message:
+          'Confirmation does not match the password.',
       },
     },
     token: String,
@@ -56,6 +66,13 @@ const userSchema = mongoose.Schema(
     active: {
       type: Boolean,
       default: false,
+    },
+    verified: {
+      type: Boolean,
+      required: [
+        true,
+        'Each user must first be verified by email!',
+      ],
     },
   },
   {
@@ -78,7 +95,8 @@ userSchema.pre('save', async function (next) {
 })
 
 userSchema.pre('save', function (next) {
-  if (!this.isModified || this.isNew || !this.password) return next()
+  if (!this.isModified || this.isNew || !this.password)
+    return next()
 
   this.passwordChangedAt = Date.now() - 1000
   next()
@@ -86,7 +104,7 @@ userSchema.pre('save', function (next) {
 
 userSchema.pre(/^find/, function (next) {
   // this point to the current query
-  this.find({ active: { $ne: false } })
+  this.find({ active: true, verified: true })
   next()
 })
 userSchema.methods.correctPassword = async function (
@@ -95,7 +113,9 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, password)
 }
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+userSchema.methods.changedPasswordAfter = function (
+  JWTTimestamp,
+) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,

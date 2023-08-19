@@ -7,7 +7,7 @@ const User = require(`${__dirname}/../models/userModel`)
 const Restaurant = require(`${__dirname}/../models/restaurantModel`)
 const crypto = require('crypto')
 const sendEmail = require('../utils/sendMail')
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
 
 const validator = require('validator')
 
@@ -52,8 +52,9 @@ const createSendToken = (user, statusCode, res) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, password, passwordConfirm, email } = req.body;
-  const token = uuidv4().replace(/-/g, '').substr(0, 256);
+  const { name, password, passwordConfirm, email } =
+    req.body
+  const token = uuidv4().replace(/-/g, '').substr(0, 256)
 
   const newUser = await User.create({
     name,
@@ -61,24 +62,25 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
     email,
     token,
-  });
+  })
 
   if (!newUser) {
     return res.status(500).json({
       status: 'fail',
       message: 'Something went wrong',
-    });
+    })
   }
 
-  newUser.password = undefined;
+  newUser.password = undefined
   res.status(201).json({
     status: 'success',
     data: {
       newUser,
     },
-  });
+  })
 
-  const emailSubject = "Please Verify your email for be safe mime user";
+  const emailSubject =
+    'Please Verify your email for be safe mime user'
 
   const emailHTML = `
   <html>
@@ -100,16 +102,17 @@ exports.signup = catchAsync(async (req, res, next) => {
   </head>
   <body>
     <h2>Verify email</h2>
-    <p>You can use this link for verify your accaount</p>
+    <p>You can use this link for verify your accaount</p> 
     <p class="verification-code"><a href="http://localhost:3000/app/v1/verifyEmail/${token}">http://localhost:3000/app/v1/verifyEmail/${token}<a></p>
   <img src="https://static.vecteezy.com/system/resources/thumbnails/022/645/609/small/skull-devil-cyborg-samurai-face-3d-rendering-generate-ai-photo.jpeg" alt="">
   
   </body>
   </html>
-  `;
+  `
+  //TODO: Make the url of the verification be compatible for each case (see reset password)
 
-  sendEmail(email, emailSubject, emailHTML);
-});
+  sendEmail(email, emailSubject, emailHTML)
+})
 
 exports.login = catchAsync(async (req, res, next) => {
   // 1. Check if password and email provided
@@ -153,24 +156,20 @@ exports.logout = (req, res) => {
   })
 }
 
-exports.verifyEmail = catchAsync(
-  async (req, res, next) => {
-    const { verifyToken } = req.params
+exports.verifyEmail = catchAsync(async (req, res, next) => {
+  const { verifyToken } = req.params
 
-      console.log(verifyToken)
-      const user = await User.findOne({ token: verifyToken })
-      console.log(user)
-      if (user){
-        console.log(user)
-        user.verify = true;
-        await user.save()
-      }
-      else {
-        console.log('User not found');
-      }
-
-});
-
+  console.log(verifyToken)
+  const user = await User.findOne({ token: verifyToken })
+  console.log(user)
+  if (user) {
+    console.log(user)
+    user.verify = true
+    await user.save()
+  } else {
+    console.log('User not found')
+  }
+})
 
 exports.authed = catchAsync(async (req, res, next) => {
   let token
