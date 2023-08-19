@@ -3,6 +3,8 @@ require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
 const crypto = require('crypto')
 const AppError = require(`../../utils/appError`)
+const verifiedView = require('../../HTMLs/verifiedView')
+const invalidRequest = require('../../HTMLs/invalidRequest')
 
 module.exports = catchAsync(async (req, res, next) => {
   const verificationToken = crypto
@@ -18,6 +20,7 @@ module.exports = catchAsync(async (req, res, next) => {
   })
 
   if (!user) {
+    // return res.status(200).send(invalidRequest())
     return next(
       new AppError('Invalid or expired verification link!'),
     )
@@ -27,10 +30,12 @@ module.exports = catchAsync(async (req, res, next) => {
   user.verificationExpires = undefined
   await user.save({ validateBeforeSave: false })
 
+  // res.status(200).send(verifiedView(user.name))
   res.status(200).json({
     status: 'success',
     user,
   })
 
   //TODO: Handle this better
+  //TODO: As user gets verified, they also should be automatically LOGGED IN
 })
