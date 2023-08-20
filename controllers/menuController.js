@@ -1,4 +1,5 @@
 const MenuItem = require('../models/menuItemModel')
+
 const AppError = require(`${__dirname}/../utils/appError`)
 
 const cathcAsync = require(`${__dirname}/../utils/catchAsync`)
@@ -8,7 +9,7 @@ const cathcAsync = require(`${__dirname}/../utils/catchAsync`)
 const menuSection = (data) => {
   const { name, section, isSection, period, belongs } = data
 
-  if (!name | !section | !period) {
+  if (!name || !section || !period) {
     throw Error('Ivalid request data')
   }
   return { name, section, isSection, period, belongs }
@@ -73,7 +74,7 @@ exports.filterRequestData = cathcAsync(
 )
 
 exports.addOne = cathcAsync(async (req, res, next) => {
-  console.log(req.data)
+  // console.log(req.data)
   const result = await MenuItem(req.data).save({
     validateBeforeSave: req.validate,
   })
@@ -89,7 +90,7 @@ exports.addOne = cathcAsync(async (req, res, next) => {
 exports.getMenu = cathcAsync(async (req, res, next) => {
   const period = req.query.period * 1 || 1
   const section = req.query.section || 'menu'
-  console.log(period, section)
+  // console.log(period, section)
   const items = await MenuItem.find({
     period,
     section,
@@ -135,7 +136,7 @@ exports.updateOne = cathcAsync(async (req, res, next) => {
   }
   const { isSection } = req.body
   let result
-  console.log(req.params.itemId)
+  // console.log(req.params.itemId)
   if (isSection) {
     result = await MenuItem.findByIdAndUpdate(
       req.params.itemId,

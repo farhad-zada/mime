@@ -1,4 +1,4 @@
-const AppError = require('./../utils/appError')
+const AppError = require('../utils/appError')
 
 const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}.`
@@ -31,16 +31,13 @@ const handleJWTExpiredError = () =>
     401,
   )
 
-const sendErrorDev = (err, req, res) => {
-  // A) API
-
-  return res.status(err.statusCode).json({
+const sendErrorDev = (err, req, res) =>
+  res.status(err.statusCode).json({
     status: err.status,
     error: err,
     message: err.message,
     stack: err.stack,
   })
-}
 
 const sendErrorProd = (err, req, res) => {
   // A) APP

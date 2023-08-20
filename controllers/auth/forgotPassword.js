@@ -1,5 +1,11 @@
+const validator = require('validator')
+
 const AppError = require('../../utils/appError')
+
 const catchAsync = require('../../utils/catchAsync')
+
+const User = require(`./../../models/userModel`)
+
 require('dotenv').config()
 
 //TODO: test this
@@ -25,11 +31,11 @@ module.exports = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false })
 
   //RESET URL
-  const resetUrl = `${req.protocol}://${req.get(
+  const url = `${req.protocol}://${req.get(
     'host',
   )}/app/v1/user/resetPassword/${resetToken}`
 
-  res.json({ status: 'success', data: { resetUrl } })
+  res.json({ status: 'success', data: { url } })
 
   //TODO: add email here
 })

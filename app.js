@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser')
 const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
-const auth = require(`${__dirname}/controllers/authController`)
+const auth = require(`${__dirname}/controllers/auth/index`)
 const globalErrorHandler = require(`${__dirname}/controllers/errorController`)
 const AppError = require(`${__dirname}/utils/appError`)
 

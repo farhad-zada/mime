@@ -1,5 +1,5 @@
 const express = require('express')
-const auth = require(`${__dirname}/../controllers/authController`)
+const auth = require(`${__dirname}/../controllers/auth/index`)
 const user = require(`${__dirname}/../controllers/userController`)
 
 const router = express.Router()

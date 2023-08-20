@@ -1,6 +1,6 @@
 const express = require('express')
 const restaurantController = require('../controllers/restaurantController')
-const auth = require(`${__dirname}/../controllers/authController`)
+const auth = require(`${__dirname}/../controllers/auth/index`)
 const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)

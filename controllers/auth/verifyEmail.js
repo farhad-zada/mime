@@ -1,10 +1,14 @@
-const catchAsync = require('../../utils/catchAsync')
-require('dotenv').config()
-const User = require(`${__dirname}/../../models/userModel`)
 const crypto = require('crypto')
+
+const catchAsync = require('../../utils/catchAsync')
+
+const User = require(`./../../models/userModel`)
+
+require('dotenv').config()
+
 const AppError = require(`../../utils/appError`)
-const verifiedView = require('../../HTMLs/verifiedView')
-const invalidRequest = require('../../HTMLs/invalidRequest')
+// const verifiedView = require('../../HTMLs/verifiedView')
+// const invalidRequest = require('../../HTMLs/invalidRequest')
 
 module.exports = catchAsync(async (req, res, next) => {
   const verificationToken = crypto
@@ -37,5 +41,5 @@ module.exports = catchAsync(async (req, res, next) => {
   })
 
   //TODO: Handle this better
-  //TODO: As user gets verified, they also should be automatically LOGGED IN
+  //TODO: ELMIR -> As user gets verified, they also should be automatically LOGGED IN
 })
