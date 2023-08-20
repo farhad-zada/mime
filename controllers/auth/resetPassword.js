@@ -4,6 +4,7 @@ require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
 const crypto = require('crypto')
 
+
 //TODO: test this
 module.exports = catchAsync(async (req, res, next) => {
   const { token } = req.params
@@ -13,10 +14,11 @@ module.exports = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(token)
     .digest('hex')
-  const user = await User.findOne({
+
+    const user = await User.findOne({
     passwordResetToken: hashedToken,
   })
-
+  console.log(user)
   if (!password || !passwordConfirm) {
     return next(
       new AppError(
@@ -32,5 +34,5 @@ module.exports = catchAsync(async (req, res, next) => {
 
   await user.save()
 
-  createSendToken(user, 200, res)
+  // createSendToken(user, 200, res)
 })
