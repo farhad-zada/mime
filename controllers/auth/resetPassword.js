@@ -3,6 +3,7 @@ const catchAsync = require('../../utils/catchAsync')
 require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
 const crypto = require('crypto')
+const createSendToken = require('./createSendToken')
 
 //TODO: test this
 module.exports = catchAsync(async (req, res, next) => {

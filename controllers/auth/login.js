@@ -3,45 +3,7 @@ const catchAsync = require('../../utils/catchAsync')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
-
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES,
-  })
-}
-
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id)
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() +
-        // eslint-disable-next-line no-undef
-        process.env.JWT_COOKIE_EXPIRES *
-          24 *
-          60 *
-          60 *
-          1000,
-    ),
-    httpOnly: true,
-  }
-  // eslint-disable-next-line no-undef
-  if (process.env.NODE_ENV == 'production') {
-    cookieOptions.secure = true
-  }
-
-  res.cookie('jwt', token, cookieOptions)
-
-  // Remove user password
-  user.password = undefined
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: {
-      user,
-    },
-  })
-}
+const createSendToken = require('./createSendToken')
 
 module.exports = catchAsync(async (req, res, next) => {
   // 1. Check if password and email provided
