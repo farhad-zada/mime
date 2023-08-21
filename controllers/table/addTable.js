@@ -1,6 +1,6 @@
-const Table = require(`${__dirname}/../models/tableModel`)
-const catchAsync = require(`${__dirname}/../utils/catchAsync`)
-const AppError = require(`${__dirname}/../utils/appError`)
+const Table = require(`${__dirname}/../../models/tableModel`)
+const catchAsync = require(`${__dirname}/../../utils/catchAsync`)
+const AppError = require(`${__dirname}/../../utils/appError`)
 
 const extractTableData = (req) => {
   const { name, chairs, waiter, status, window_side } =
@@ -8,7 +8,7 @@ const extractTableData = (req) => {
   return { name, chairs, waiter, status, window_side }
 }
 
-exports.addOne = catchAsync(async (req, res, next) => {
+module.exports = catchAsync(async (req, res, next) => {
   const data = extractTableData(req)
   // console.log(data)
   data.restaurant = req.params.restaurantId

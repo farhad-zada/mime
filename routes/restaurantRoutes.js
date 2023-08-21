@@ -5,6 +5,7 @@ const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)
 const menuRoutes = require(`${__dirname}/menuRoutes`)
+const tableRoutes = require(`${__dirname}/tableRoutes`)
 
 const router = express.Router()
 
@@ -18,8 +19,6 @@ router.use(
   unfoldNestedDetails,
   likesRoutes,
 )
-
-router.use('/:restaurantId/menu', menuRoutes)
 
 router
   .route('/')
@@ -35,5 +34,8 @@ router
     auth.restaurantOwner,
     restaurantController.deleteRestaurant,
   )
+router.use('/:restaurantId/tables', tableRoutes)
+
+router.use('/:restaurantId/menu', menuRoutes)
 
 module.exports = router

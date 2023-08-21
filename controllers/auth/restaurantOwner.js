@@ -5,18 +5,16 @@ const Restaurant = require(`../../models/restaurantModel`)
 
 require('dotenv').config()
 
-exports.restaurantOwner = catchAsync(
-  async (req, res, next) => {
-    const restaurant = await Restaurant.findById(
-      req.params.restaurantId,
+module.exports = catchAsync(async (req, res, next) => {
+  const restaurant = await Restaurant.findById(
+    req.params.restaurantId,
+  )
+  if (restaurant.owner !== req.user.id) {
+    return next(
+      new AppError('Not owner of the restaurant', 403),
     )
-    if (restaurant.owner !== req.user.id) {
-      return next(
-        new AppError('Not owner of the restaurant', 403),
-      )
-    }
+  }
 
-    req.restaurant = restaurant
-    next()
-  },
-)
+  req.restaurant = restaurant
+  next()
+})

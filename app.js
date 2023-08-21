@@ -11,6 +11,7 @@ const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
 const auth = require(`${__dirname}/controllers/auth/index`)
+const sessionRoutes = require(`${__dirname}/routes/sessionRoutes`)
 const globalErrorHandler = require(`${__dirname}/controllers/errorController`)
 const AppError = require(`${__dirname}/utils/appError`)
 
@@ -31,10 +32,12 @@ const limiter = rateLimit({
 
 app.use('/', limiter)
 app.use(cookieParser())
-
-app.get('/app/v1/', (req, res) => {
-  res.send('Hello')
+//TODO: remove the endpoint below
+app.post('app/v1/session', (req, res, next) => {
+  next()
 })
+app.use('/app/v1/session/', sessionRoutes)
+
 app.use('/app/v1/user/', userRoutes)
 
 // app.use(auth.authed)
