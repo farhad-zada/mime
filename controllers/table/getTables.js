@@ -1,14 +1,21 @@
 const Table = require(`${__dirname}/../../models/tableModel`)
 const catchAsync = require(`${__dirname}/../../utils/catchAsync`)
+const APIFeatures = require(`../../utils/apiFeatures`)
 
 //TEST:
 
 // Get tables all of the restaurant
 
 module.exports = catchAsync(async (req, res, next) => {
-  const restaurant = req.params.restaurantId
+  req.query.restaurant = req.params.restaurantId
 
-  const tables = await Table.find({ restaurant })
+  const query = new APIFeatures(Table.find(), req.query)
+    .filter()
+    .limitFields()
+    .sort()
+    .paginate(15)
+
+  const tables = await query.query
 
   res.status(200).json({
     status: 'success',

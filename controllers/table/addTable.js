@@ -13,7 +13,9 @@ module.exports = catchAsync(async (req, res, next) => {
   // console.log(data)
   data.restaurant = req.params.restaurantId
   // console.log('Writing to DB...')
+
   const table = await Table.create(data)
+
   // console.log('Writtent to DB!')
 
   if (!table) {

@@ -29,9 +29,5 @@ module.exports = catchAsync(async (req, res, next) => {
     return next(
       new AppError('Incorrect email or password!', 400),
     )
-  try {
-    createSendToken(user, 200, res)
-  } catch (err) {
-    return next(new AppError('Something went wrong!', 403))
-  }
+  createSendToken(user, 200, res)
 })

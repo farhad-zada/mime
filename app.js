@@ -32,15 +32,12 @@ const limiter = rateLimit({
 
 app.use('/', limiter)
 app.use(cookieParser())
-//TODO: remove the endpoint below
-app.post('app/v1/session', (req, res, next) => {
-  next()
-})
+
 app.use('/app/v1/session/', sessionRoutes)
 
 app.use('/app/v1/user/', userRoutes)
 
-// app.use(auth.authed)
+app.use(auth.authed)
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
   '/app/v1/reviews',
@@ -53,7 +50,7 @@ app.all('*', (req, res, next) => {
 
   return next(
     new AppError(
-      `Can't find https://${req.get('host')}/${
+      `Can't find ${req.protocol}://${req.get('host')}${
         req.originalUrl
       } on this server!`,
       404,

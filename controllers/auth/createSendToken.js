@@ -10,9 +10,8 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id)
   const cookieOptions = {
-    expires: new Date(
+    expire: new Date(
       Date.now() +
-        // eslint-disable-next-line no-undef
         process.env.JWT_COOKIE_EXPIRES *
           24 *
           60 *

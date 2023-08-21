@@ -1,5 +1,5 @@
-const createSession = require('./createSession')
+const enterSession = require('./createSession')
 
 module.exports = {
-  createSession,
+  enterSession,
 }

@@ -9,21 +9,22 @@ const tableRoutes = require(`${__dirname}/tableRoutes`)
 
 const router = express.Router()
 
+router
+  .route('/')
+  .get(restaurantController.getAllRestaurants)
+  .post(restaurantController.createRestaurant)
+
 router.use(
   '/:restaurantId/reviews',
   unfoldNestedDetails,
   reviewRoutes,
 )
+
 router.use(
   '/:restaurantId/likes',
   unfoldNestedDetails,
   likesRoutes,
 )
-
-router
-  .route('/')
-  .get(restaurantController.getAllRestaurants)
-  .post(restaurantController.createRestaurant)
 
 router.route('/near').get(restaurantController.getNear)
 

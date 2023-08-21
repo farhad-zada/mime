@@ -2,18 +2,16 @@ const Session = require('../../models/sessionModel')
 const catchAsync = require('../../utils/catchAsync')
 const AppError = require('../../utils/appError')
 
+//TEST: this
 module.exports = catchAsync(async (req, res, next) => {
-  console.log(req)
-  const { user, restaurant, table } = req.body
-
   const session = await Session.create({
     started: Date.now(),
-    table,
-    restaurant,
-    session_admin: user,
+    table: req.params.tableId,
+    restaurant: req.params.restaurantId,
+    session_admin: req.user.id,
     people: [
       {
-        user_id: user,
+        user_id: req.user.id,
         joined: Date.now(),
       },
     ],

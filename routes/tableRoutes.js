@@ -1,5 +1,6 @@
 const express = require('express')
 const tableController = require('../controllers/table/index')
+const sessionRoutes = require('../routes/sessionRoutes')
 
 const router = express.Router({ mergeParams: true })
 
@@ -14,4 +15,5 @@ router
   .patch(tableController.updateTable)
   .delete(tableController.deleteTable)
 
+router.use('/:tableId/session', sessionRoutes)
 module.exports = router
