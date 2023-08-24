@@ -6,11 +6,15 @@ const catchAsync = require('../../utils/catchAsync')
 
 const User = require(`./../../models/userModel`)
 
+const sendEmail = require('../../utils/sendMail')
+const forgetPasswordTemplate = require(`${__dirname}/../../mailTemplate/forgetPassword`)
+
 require('dotenv').config()
 
 //TODO: test this
 module.exports = catchAsync(async (req, res, next) => {
   const { email } = req.body
+  
   if (!email) {
     return next(
       new AppError(
@@ -30,12 +34,20 @@ module.exports = catchAsync(async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false })
 
+  const emailSubject = 'Reset Your Password for MiME Account';
+
   //RESET URL
   const url = `${req.protocol}://${req.get(
     'host',
   )}/app/v1/user/resetPassword/${resetToken}`
 
-  res.json({ status: 'success', data: { url } })
+  const emailHTML = forgetPasswordTemplate(resetUrl)
 
-  //TODO: add email here
+  const info = await sendEmail(
+    email,
+    emailSubject,
+    emailHTML,
+  )
+  res.json({ status: 'success', data: { resetUrl } })
+
 })

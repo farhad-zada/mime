@@ -3,7 +3,7 @@ const catchAsync = require('../../utils/catchAsync')
 require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
 const sendEmail = require('../../utils/sendMail')
-const verifyEmailForm = require(`${__dirname}/../../HTMLs/verifyEmailForm`)
+const verifyEmailTemplate = require(`${__dirname}/../../mailTemplate/verifyEmail`)
 
 module.exports = catchAsync(async (req, res, next) => {
   const { name, password, passwordConfirm, email } =
@@ -39,7 +39,7 @@ module.exports = catchAsync(async (req, res, next) => {
     'host',
   )}/app/v1/user/verifyEmail/${verificationToken}`
 
-  const emailHTML = verifyEmailForm(url)
+  const emailHTML = verifyEmailTemplate(url)
 
   const info = await sendEmail(
     email,

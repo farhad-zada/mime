@@ -13,6 +13,6 @@ router
   .route('/resetPassword/:token')
   .post(auth.resetPassword)
 router.route('/updatePassword').post(auth.updatePassword)
-router.route('/deleteUser/:email').get(user.deleteUser)
+router.route('/deleteUser/:email').delete(user.deleteUser)
 
 module.exports = router
