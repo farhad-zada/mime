@@ -2,6 +2,7 @@ const AppError = require('../../utils/appError')
 const catchAsync = require('../../utils/catchAsync')
 require('dotenv').config()
 const User = require(`${__dirname}/../../models/userModel`)
+const createSendToken = require(`./createSendToken`)
 
 module.exports = catchAsync(async (req, res, next) => {
   const { currentPassword, password, passwordConfirm } =

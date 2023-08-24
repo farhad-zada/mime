@@ -38,6 +38,7 @@ module.exports = catchAsync(async (req, res, next) => {
   const url = `${req.protocol}://${req.get(
     'host',
   )}/app/v1/user/verifyEmail/${verificationToken}`
+
   const emailHTML = verifyEmailTemplate(url)
 
   const info = await sendEmail(

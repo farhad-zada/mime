@@ -10,7 +10,8 @@ const cookieParser = require('cookie-parser')
 const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
-const auth = require(`${__dirname}/controllers/authController`)
+const auth = require(`${__dirname}/controllers/auth/index`)
+const sessionRoutes = require(`${__dirname}/routes/sessionRoutes`)
 const globalErrorHandler = require(`${__dirname}/controllers/errorController`)
 const AppError = require(`${__dirname}/utils/appError`)
 
@@ -32,12 +33,11 @@ const limiter = rateLimit({
 app.use('/', limiter)
 app.use(cookieParser())
 
-app.get('/app/v1/', (req, res) => {
-  res.send('Hello')
-})
+app.use('/app/v1/session/', sessionRoutes)
+
 app.use('/app/v1/user/', userRoutes)
 
-// app.use(auth.authed)
+app.use(auth.authed)
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
   '/app/v1/reviews',
@@ -50,7 +50,7 @@ app.all('*', (req, res, next) => {
 
   return next(
     new AppError(
-      `Can't find https://${req.get('host')}/${
+      `Can't find ${req.protocol}://${req.get('host')}${
         req.originalUrl
       } on this server!`,
       404,

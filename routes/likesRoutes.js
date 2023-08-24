@@ -1,4 +1,5 @@
-const likesController = require(`${__dirname}/../controllers/likeController`)
+const likesController = require(`${__dirname}/../controllers/like/index`)
+
 const express = require('express')
 
 const router = express.Router({ mergeParams: true })

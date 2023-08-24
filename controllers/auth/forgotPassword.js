@@ -1,10 +1,14 @@
+const validator = require('validator')
+
 const AppError = require('../../utils/appError')
+
 const catchAsync = require('../../utils/catchAsync')
+
+const User = require(`./../../models/userModel`)
+
 const sendEmail = require('../../utils/sendMail')
 const forgetPasswordTemplate = require(`${__dirname}/../../mailTemplate/forgetPassword`)
-const User = require('../../models/userModel')
-const validator = require('validator')
-const createToken = require('./login')
+
 require('dotenv').config()
 
 //TODO: test this
@@ -33,7 +37,7 @@ module.exports = catchAsync(async (req, res, next) => {
   const emailSubject = 'Reset Your Password for MiME Account';
 
   //RESET URL
-  const resetUrl = `${req.protocol}://${req.get(
+  const url = `${req.protocol}://${req.get(
     'host',
   )}/app/v1/user/resetPassword/${resetToken}`
 

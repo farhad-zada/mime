@@ -1,6 +1,6 @@
 const express = require('express')
 const menuController = require(`${__dirname}/../controllers/menuController`)
-const auth = require(`${__dirname}/../controllers/authController`)
+const auth = require(`${__dirname}/../controllers/auth/index`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 
 const router = express.Router({ mergeParams: true })

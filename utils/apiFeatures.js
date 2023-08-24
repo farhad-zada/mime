@@ -73,7 +73,8 @@ class APIFeatures {
 
   paginate(max) {
     const page = this.queryString.page * 1 || 1
-    const limit = Math.max(
+
+    const limit = Math.min(
       this.queryString.limit * 1 || 10,
       max,
     )
