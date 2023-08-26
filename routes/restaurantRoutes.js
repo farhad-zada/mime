@@ -1,5 +1,5 @@
 const express = require('express')
-const restaurantController = require('../controllers/restaurantController')
+const restaurantController = require('../controllers/restaurant/index')
 const auth = require(`${__dirname}/../controllers/auth/index`)
 const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
@@ -11,8 +11,8 @@ const router = express.Router()
 
 router
   .route('/')
-  .get(restaurantController.getAllRestaurants)
-  .post(restaurantController.createRestaurant)
+  .get(restaurantController.getMany)
+  .post(restaurantController.createOne)
 
 router.use(
   '/:restaurantId/reviews',
@@ -26,14 +26,14 @@ router.use(
   likesRoutes,
 )
 
-router.route('/near').get(restaurantController.getNear)
+router.route('/near').get(restaurantController.getNears)
 
 router
-  .route('/:id')
-  .get(restaurantController.getRestaurantById)
+  .route('/:restaurantId')
+  .get(restaurantController.getById)
   .delete(
-    auth.restaurantOwner,
-    restaurantController.deleteRestaurant,
+    auth.restaurantOwner, //TODO: improve security for deletion
+    restaurantController.deleteOne,
   )
 router.use('/:restaurantId/tables', tableRoutes)
 

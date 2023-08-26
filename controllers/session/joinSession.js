@@ -5,7 +5,7 @@ const createSession = require('./createSession')
 
 module.exports = catchAsync(async (req, res, next) => {
   const session = await req.session.people.push({
-    user_id: req.user.id,
+    user_id: req.user.id, // Update user status
   })
   res.status(200).json({ session })
 })
