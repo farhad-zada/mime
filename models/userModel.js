@@ -24,13 +24,15 @@ const userSchema = mongoose.Schema(
     },
     photo: String,
     role: {
-      type: String,
+      type: [String],
       enum: [
+        'owner-mime',
         'user',
         'admin-mime',
-        'back-mime',
+        'role-editor-mime',
+        'validator-restaurant-mime',
         'restaurant-owner',
-        'waiter',
+        'restaurant-waiter',
         'restaurant-admin',
       ],
       default: 'user',
