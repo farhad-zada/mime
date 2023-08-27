@@ -1,20 +1,26 @@
 const Session = require('../../models/sessionModel')
 const catchAsync = require('../../utils/catchAsync')
-const AppError = require('../../utils/appError')
+const sessionUpdates = require('./updates/index')
 
 //TEST: this
 module.exports = catchAsync(async (req, res, next) => {
-  console.log(req.originUrl)
-  return res.send('Good')
+  //
+  req.user = sessionUpdates.updateUser(req.user, true) // Update user's session status to true
+  req.table['status'] = sessionUpdates.updateTable(
+    req.table,
+    'on_session',
+  ) // Update table's status to on_session
+
+  await Promise.all([req.user, req.table]) // Here we wait both to be set
+
   const session = await Session.create({
     started: Date.now(),
-    table: req.params.tableId, //TODO: update table status
+    table: req.params.tableId,
     restaurant: req.params.restaurantId,
     session_admin: req.user.id,
     people: [
       {
-        user_id: req.user.id, //TODO: update user status
-        joined: Date.now(),
+        user_id: req.user.id,
       },
     ],
   })

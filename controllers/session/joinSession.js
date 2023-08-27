@@ -1,11 +1,21 @@
-const Session = require('../../models/sessionModel')
 const catchAsync = require('../../utils/catchAsync')
 const AppError = require('../../utils/appError')
-const createSession = require('./createSession')
+const SessionRequest = require('../../models/sessionJoinRequestModel')
 
 module.exports = catchAsync(async (req, res, next) => {
-  const session = await req.session.people.push({
-    user_id: req.user.id, // Update user status
+  const sessionRequest = await SessionRequest.create({
+    session: req.table.session,
+    table: req.table.id,
+    user: req.user.id,
+    restaurant: req.restaurant.id,
   })
-  res.status(200).json({ session })
+
+  if (!sessionRequest) {
+    return next(new AppError('Something went wrong!', 400))
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: { sessionRequest },
+  })
 })

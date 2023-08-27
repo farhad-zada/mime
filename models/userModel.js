@@ -74,6 +74,13 @@ const userSchema = mongoose.Schema(
         'Each user must first be verified by email!',
       ],
     },
+    on_session: {
+      type: Boolean,
+      required: [
+        true,
+        'Session status must be showen. For security needs.',
+      ],
+    },
   },
   {
     toJSON: { virtuals: true },
