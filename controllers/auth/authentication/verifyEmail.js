@@ -1,14 +1,14 @@
 const crypto = require('crypto')
 
-const catchAsync = require('../../utils/catchAsync')
+const catchAsync = require('../../../utils/catchAsync')
 
-const User = require(`./../../models/userModel`)
+const User = require(`./../../../models/userModel`)
 
 require('dotenv').config()
 
-const AppError = require(`../../utils/appError`)
-// const verifiedView = require('../../HTMLs/verifiedView')
-// const invalidRequest = require('../../HTMLs/invalidRequest')
+const AppError = require(`../../../utils/appError`)
+// const verifiedView = require('../../../HTMLs/verifiedView')
+// const invalidRequest = require('../../../HTMLs/invalidRequest')
 
 module.exports = catchAsync(async (req, res, next) => {
   const verificationToken = crypto

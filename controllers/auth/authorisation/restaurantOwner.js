@@ -1,7 +1,7 @@
-const AppError = require('../../utils/appError')
-const catchAsync = require('../../utils/catchAsync')
+const AppError = require('../../../utils/appError')
+const catchAsync = require('../../../utils/catchAsync')
 
-const Restaurant = require(`../../models/restaurantModel`)
+const Restaurant = require(`../../../models/restaurantModel`)
 
 require('dotenv').config()
 

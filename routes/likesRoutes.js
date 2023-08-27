@@ -1,4 +1,4 @@
-const likesController = require(`${__dirname}/../controllers/like/index`)
+const likesController = require(`./../controllers/like/index`)
 
 const express = require('express')
 

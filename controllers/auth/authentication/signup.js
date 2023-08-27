@@ -1,9 +1,9 @@
-const AppError = require(`${__dirname}/../../utils/appError`)
-const catchAsync = require('../../utils/catchAsync')
+const AppError = require(`${__dirname}/../../../utils/appError`)
+const catchAsync = require('../../../utils/catchAsync')
 require('dotenv').config()
-const User = require(`${__dirname}/../../models/userModel`)
-const sendEmail = require('../../utils/sendMail')
-const verifyEmailForm = require(`${__dirname}/../../HTMLs/verifyEmailForm`)
+const User = require(`${__dirname}/../../../models/userModel`)
+const sendEmail = require('../../../utils/sendMail')
+const verifyEmailForm = require(`${__dirname}/../../../HTMLs/verifyEmailForm`)
 
 module.exports = catchAsync(async (req, res, next) => {
   const { name, password, passwordConfirm, email } =

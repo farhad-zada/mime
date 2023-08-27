@@ -1,6 +1,6 @@
-const Restaurant = require('../models/restaurantModel')
-const APIFeatures = require(`${__dirname}/../utils/apiFeatures`)
-const catchAsync = require(`${__dirname}/../utils/catchAsync`)
+const Restaurant = require('../../models/restaurantModel')
+const APIFeatures = require(`${__dirname}/../../utils/apiFeatures`)
+const catchAsync = require(`${__dirname}/../../utils/catchAsync`)
 
 //TEST: this
 module.exports = catchAsync(async (req, res, next) => {

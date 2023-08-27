@@ -4,6 +4,8 @@ const AppError = require('../../utils/appError')
 
 //TEST: this
 module.exports = catchAsync(async (req, res, next) => {
+  console.log(req.originUrl)
+  return res.send('Good')
   const session = await Session.create({
     started: Date.now(),
     table: req.params.tableId, //TODO: update table status

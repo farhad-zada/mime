@@ -1,6 +1,6 @@
 const express = require('express')
 const restaurantController = require('../controllers/restaurant/index')
-const auth = require(`${__dirname}/../controllers/auth/index`)
+const auth = require(`./../controllers/auth/index`)
 const reviewRoutes = require(`${__dirname}/../routes/reviewRoutes`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)
@@ -32,7 +32,7 @@ router
   .route('/:restaurantId')
   .get(restaurantController.getById)
   .delete(
-    auth.restaurantOwner, //TODO: improve security for deletion
+    auth.authorisation.restaurantOwner, //TODO: improve security for deletion
     restaurantController.deleteOne,
   )
 router.use('/:restaurantId/tables', tableRoutes)

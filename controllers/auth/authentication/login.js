@@ -1,9 +1,8 @@
-const AppError = require('../../utils/appError')
-const catchAsync = require('../../utils/catchAsync')
-const jwt = require('jsonwebtoken')
-require('dotenv').config()
-const User = require(`${__dirname}/../../models/userModel`)
 const createSendToken = require('./createSendToken')
+const AppError = require(`${__dirname}/../../../utils/appError`)
+const catchAsync = require('../../../utils/catchAsync')
+require('dotenv').config()
+const User = require(`${__dirname}/../../../models/userModel`)
 
 module.exports = catchAsync(async (req, res, next) => {
   // 1. Check if password and email provided

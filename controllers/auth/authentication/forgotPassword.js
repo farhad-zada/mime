@@ -1,10 +1,10 @@
 const validator = require('validator')
 
-const AppError = require('../../utils/appError')
+const AppError = require('../../../utils/appError')
 
-const catchAsync = require('../../utils/catchAsync')
+const catchAsync = require('../../../utils/catchAsync')
 
-const User = require(`./../../models/userModel`)
+const User = require(`../../../models/userModel`)
 
 require('dotenv').config()
 
