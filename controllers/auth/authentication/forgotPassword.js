@@ -6,7 +6,7 @@ const catchAsync = require('../../../utils/catchAsync')
 
 const User = require(`../../../models/userModel`)
 
-const sendEmail = require('../../utils/sendMail')
+const sendEmail = require('../../../utils/sendMail')
 const forgetPasswordTemplate = require(`${__dirname}/../../../mailTemplate/forgetPassword`)
 
 require('dotenv').config()
