@@ -2,7 +2,7 @@ const catchAsync = require('../../utils/catchAsync')
 const createSession = require('./createSession')
 const joinSession = require('./joinSession')
 
-//TODO: restrict double join with far more security
+// DONE
 
 module.exports = catchAsync(async (req, res, next) => {
   //

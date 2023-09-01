@@ -38,6 +38,7 @@ app.use('/app/v1/session/', sessionRoutes)
 app.use('/app/v1/user/', userRoutes)
 
 app.use(auth.authentication.authed)
+
 app.use('/app/v1/restaurants', restaurantRoutes)
 app.use(
   '/app/v1/reviews',

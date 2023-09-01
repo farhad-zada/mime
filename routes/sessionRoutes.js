@@ -13,7 +13,6 @@ router.route('/').post(
 router
   .route('/:sessionId/:sessionRequestId')
   .post(
-    sessionChecks.userStatus,
     sessionController.midFindSessionById,
     sessionController.midFindSessionRequestById,
     sessionController.acceptSessionRequest,
