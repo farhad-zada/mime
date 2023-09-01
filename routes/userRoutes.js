@@ -15,6 +15,7 @@ router
   .get(auth.authentication.forgotPassword)
 router
   .route('/resetPassword/:token')
+
   .post(auth.authentication.resetPassword)
 router
   .route('/updatePassword')

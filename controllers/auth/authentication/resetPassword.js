@@ -14,10 +14,11 @@ module.exports = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(token)
     .digest('hex')
+
   const user = await User.findOne({
     passwordResetToken: hashedToken,
   })
-
+  console.log(user)
   if (!password || !passwordConfirm) {
     return next(
       new AppError(
