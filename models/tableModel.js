@@ -68,6 +68,10 @@ const tableSchema = mongoose.Schema({
     },
     default: 'available',
   },
+  session: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Session',
+  },
   chairs: chairSchema,
   reservation: reserveSchema,
   window_side: Boolean,

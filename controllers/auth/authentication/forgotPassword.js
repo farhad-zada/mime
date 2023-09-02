@@ -1,20 +1,20 @@
 const validator = require('validator')
 
-const AppError = require('../../utils/appError')
+const AppError = require('../../../utils/appError')
 
-const catchAsync = require('../../utils/catchAsync')
+const catchAsync = require('../../../utils/catchAsync')
 
-const User = require(`./../../models/userModel`)
+const User = require(`../../../models/userModel`)
 
-const sendEmail = require('../../utils/sendMail')
-const forgetPasswordTemplate = require(`${__dirname}/../../mailTemplate/forgetPassword`)
+const sendEmail = require('../../../utils/sendMail')
+const forgetPasswordTemplate = require(`${__dirname}/../../../mailTemplate/forgetPassword`)
 
 require('dotenv').config()
 
 //TODO: test this
 module.exports = catchAsync(async (req, res, next) => {
   const { email } = req.body
-  
+
   if (!email) {
     return next(
       new AppError(
@@ -34,7 +34,8 @@ module.exports = catchAsync(async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false })
 
-  const emailSubject = 'Reset Your Password for MiME Account';
+  const emailSubject =
+    'Reset Your Password for MiME Account'
 
   //RESET URL
   const url = `${req.protocol}://${req.get(
@@ -49,5 +50,4 @@ module.exports = catchAsync(async (req, res, next) => {
     emailHTML,
   )
   res.json({ status: 'success', data: { resetUrl } })
-
 })

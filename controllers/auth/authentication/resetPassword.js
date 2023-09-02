@@ -1,10 +1,9 @@
-const AppError = require('../../utils/appError')
-const catchAsync = require('../../utils/catchAsync')
+const AppError = require('../../../utils/appError')
+const catchAsync = require('../../../utils/catchAsync')
 require('dotenv').config()
-const User = require(`${__dirname}/../../models/userModel`)
+const User = require(`${__dirname}/../../../models/userModel`)
 const crypto = require('crypto')
 const createSendToken = require('./createSendToken')
-
 
 //TODO: test this
 module.exports = catchAsync(async (req, res, next) => {
@@ -16,7 +15,7 @@ module.exports = catchAsync(async (req, res, next) => {
     .update(token)
     .digest('hex')
 
-    const user = await User.findOne({
+  const user = await User.findOne({
     passwordResetToken: hashedToken,
   })
   console.log(user)
@@ -35,5 +34,5 @@ module.exports = catchAsync(async (req, res, next) => {
 
   await user.save()
 
-  // createSendToken(user, 200, res)
+  createSendToken(user, 200, res)
 })

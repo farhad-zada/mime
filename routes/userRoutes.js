@@ -1,18 +1,26 @@
 const express = require('express')
-const auth = require(`${__dirname}/../controllers/auth/index`)
-const user = require(`${__dirname}/../controllers/userController`)
+const auth = require(`../controllers/auth/index`)
+const user = require(`../controllers/userController`)
 
 const router = express.Router()
 
-router.route('/signup').post(auth.signup)
-router.route('/verifyEmail/:token').get(auth.verifyEmail)
-router.route('/login').get(auth.login)
-router.route('/logout').get(auth.logout)
-router.route('/forgotPassword').get(auth.forgotPassword)
+router.route('/signup').post(auth.authentication.signup)
+router
+  .route('/verifyEmail/:token')
+  .get(auth.authentication.verifyEmail)
+router.route('/login').get(auth.authentication.login)
+router.route('/logout').get(auth.authentication.logout)
+router
+  .route('/forgotPassword')
+  .get(auth.authentication.forgotPassword)
 router
   .route('/resetPassword/:token')
-  .post(auth.resetPassword)
-router.route('/updatePassword').post(auth.updatePassword)
-router.route('/deleteUser/:email').delete(user.deleteUser)
+
+  .post(auth.authentication.resetPassword)
+router
+  .route('/updatePassword')
+  .post(auth.authentication.updatePassword)
+//TODO: delete this
+// router.route('/deleteUser/:email').get(user.deleteUser)
 
 module.exports = router

@@ -1,9 +1,9 @@
-const AppError = require('../../utils/appError')
-const catchAsync = require('../../utils/catchAsync')
 const jwt = require('jsonwebtoken')
 const { promisify } = require('util')
 require('dotenv').config()
-const User = require(`${__dirname}/../../models/userModel`)
+const AppError = require(`${__dirname}/../../../utils/appError`)
+const catchAsync = require('../../../utils/catchAsync')
+const User = require(`${__dirname}/../../../models/userModel`)
 
 module.exports = catchAsync(async (req, res, next) => {
   let token

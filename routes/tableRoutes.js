@@ -9,6 +9,8 @@ router
   .get(tableController.getTables)
   .post(tableController.addTable)
 
+router.use(tableController.midFindTableById) //This finds table and adds it to ###->req.table
+
 router
   .route('/:tableId')
   .get(tableController.getOneTable)

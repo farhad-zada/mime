@@ -1,6 +1,6 @@
 const express = require('express')
 const menuController = require(`${__dirname}/../controllers/menuController`)
-const auth = require(`${__dirname}/../controllers/auth/index`)
+const auth = require(`./../controllers/auth/index`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 
 const router = express.Router({ mergeParams: true })
@@ -20,7 +20,7 @@ router
   .route('/')
   .get(menuController.getMenu)
   .post(
-    auth.restaurantOwner,
+    auth.authorisation.restaurantOwner,
     menuController.filterRequestData,
     menuController.addOne,
   )
@@ -28,8 +28,14 @@ router
 router
   .route('/:itemId')
   .get(menuController.getOne)
-  .patch(auth.restaurantOwner, menuController.updateOne)
-  .delete(auth.restaurantOwner, menuController.deleteOne)
+  .patch(
+    auth.authorisation.restaurantOwner,
+    menuController.updateOne,
+  )
+  .delete(
+    auth.authorisation.restaurantOwner,
+    menuController.deleteOne,
+  )
 
 router.use('/:itemId/likes', likesRoutes)
 

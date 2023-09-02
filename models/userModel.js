@@ -24,13 +24,15 @@ const userSchema = mongoose.Schema(
     },
     photo: String,
     role: {
-      type: String,
+      type: [String],
       enum: [
+        'owner-mime',
         'user',
         'admin-mime',
-        'back-mime',
+        'role-editor-mime',
+        'validator-restaurant-mime',
         'restaurant-owner',
-        'waiter',
+        'restaurant-waiter',
         'restaurant-admin',
       ],
       default: 'user',
@@ -70,6 +72,13 @@ const userSchema = mongoose.Schema(
       required: [
         true,
         'Each user must first be verified by email!',
+      ],
+    },
+    on_session: {
+      type: Boolean,
+      required: [
+        true,
+        'Session status must be showen. For security needs.',
       ],
     },
   },
