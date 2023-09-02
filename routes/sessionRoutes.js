@@ -17,4 +17,12 @@ router
     sessionController.midFindSessionRequestById,
     sessionController.acceptSessionRequest,
   )
+
+router
+  .route('/:sessionId')
+  .post(
+    sessionController.midFindSessionById,
+    sessionController.transferSessionAdminship,
+  )
+  .put()
 module.exports = router
