@@ -6,6 +6,7 @@ const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const unfoldNestedDetails = require(`${__dirname}/../utils/unfoldNestedDetails`)
 const menuRoutes = require(`${__dirname}/menuRoutes`)
 const tableRoutes = require(`${__dirname}/tableRoutes`)
+const checkRole = require('../controllers/auth/authorisation/checkRole'); 
 
 const router = express.Router()
 
@@ -19,6 +20,11 @@ router.use(
   unfoldNestedDetails,
   reviewRoutes,
 )
+
+router.use(
+  '/:restaurantId/activate',
+  checkRole('validator-restaurant-mime') 
+);
 
 router.use(
   '/:restaurantId/likes',
@@ -35,6 +41,8 @@ router
     auth.authorisation.restaurantOwner, //TODO: improve security for deletion
     restaurantController.deleteOne,
   )
+
+
 router.use('/:restaurantId/tables', tableRoutes)
 
 router.use('/:restaurantId/menu', menuRoutes)

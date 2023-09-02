@@ -92,7 +92,7 @@ restauranSchema = mongoose.Schema(
     phones: [String],
     active: {
       type: String,
-      default: 'active',
+      default: 'deactive',
       enum: {
         values: ['active', 'deactive', 'deleted'],
         message: `A restaurant's activity status should be explicitly showed.`,
