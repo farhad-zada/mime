@@ -1,5 +1,26 @@
 const mongoose = require('mongoose')
 const { default: slugify } = require('slugify')
+const RestaurantValidation = require('./creatorRestaurantActivity')
+
+const restaurantImagesSchema = mongoose.Schema({
+  url: {
+    type: String,
+    unique: true,
+    required: [true, 'URL not found!'],
+  },
+  tags: {
+    type: [String],
+    enum: [
+      'interiors',
+      'menu_item',
+      'atosphere',
+      'table',
+      'customers',
+      'media',
+    ],
+    default: ['media'],
+  },
+})
 
 restauranSchema = mongoose.Schema(
   {
@@ -19,6 +40,16 @@ restauranSchema = mongoose.Schema(
       ],
     },
     //TODO: Make this required
+    description: {
+      type: String,
+      required: [true, 'Description not added!'],
+      maxLength: [
+        10000,
+        'Not more than 10000 charachters!',
+      ],
+      minLength: [1, 'Not less than 1 charachters!'],
+      default: 'I am waiting for you to discover me 🤫!',
+    },
     owner: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
@@ -70,14 +101,8 @@ restauranSchema = mongoose.Schema(
         'A restaurant needs to add payment methods.',
       ],
     },
-    profileImage: {
-      type: String,
-      required: [
-        true,
-        'A restaurant needs to have profile image',
-      ],
-    },
-    images: [String],
+    profileImage: String,
+    images: restaurantImagesSchema,
     location: {
       type: {
         type: String,
@@ -92,16 +117,28 @@ restauranSchema = mongoose.Schema(
     phones: [String],
     active: {
       type: String,
-      default: 'active',
+      default: 'not-validated',
       enum: {
-        values: ['active', 'deactive', 'deleted'],
+        values: [
+          'active',
+          'deactive',
+          'deleted',
+          'not-validated',
+        ],
         message: `A restaurant's activity status should be explicitly showed.`,
       },
     },
     admins: {
       type: [mongoose.Schema.ObjectId],
+      ref: 'User',
       select: false,
     },
+    waiters: {
+      type: [mongoose.Schema.ObjectId],
+      ref: 'User',
+      select: false,
+    },
+    validation_key: String,
   },
   {
     toJSON: { virtuals: true },

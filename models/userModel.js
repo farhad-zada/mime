@@ -3,6 +3,28 @@ const validator = require('validator')
 const bcrypt = require('bcrypt')
 const crypto = require('crypto')
 
+const restaurantsBelongMe = mongoose.Schema({
+  restaurant: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Restaurant',
+    required: [true, 'Restaurant ID not found'],
+  },
+  role: {
+    type: [String],
+    enum: [
+      'restaurant-owner',
+      'restaurant-admin',
+      'restaurant-waiter',
+      'restaurant-cook',
+    ],
+  },
+  started: {
+    type: Date,
+    default: Date.now(),
+  },
+  ended: Date,
+})
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -30,10 +52,10 @@ const userSchema = mongoose.Schema(
         'user',
         'admin-mime',
         'role-editor-mime',
-        'validator-restaurant-mime',
-        'restaurant-owner',
-        'restaurant-waiter',
-        'restaurant-admin',
+        'creator-restaurant-mime',
+        // 'restaurant-owner',
+        // 'restaurant-waiter',
+        // 'restaurant-admin',
       ],
       default: 'user',
     },
@@ -63,6 +85,7 @@ const userSchema = mongoose.Schema(
     passwordResetExpires: Date,
     verificationExpires: Date,
     verificationToken: String,
+    restaurants: [restaurantsBelongMe], //TODO:
     active: {
       type: Boolean,
       default: true,

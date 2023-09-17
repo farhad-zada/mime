@@ -2,14 +2,13 @@ const Table = require(`${__dirname}/../../models/tableModel`)
 const catchAsync = require(`${__dirname}/../../utils/catchAsync`)
 const AppError = require(`${__dirname}/../../utils/appError`)
 
-const extractTableData = (req) => {
-  const { name, chairs, waiter, status, window_side } =
-    req.body
+const extractTableData = (data) => {
+  const { name, chairs, waiter, status, window_side } = data
   return { name, chairs, waiter, status, window_side }
 }
 
 module.exports = catchAsync(async (req, res, next) => {
-  const data = extractTableData(req)
+  const data = extractTableData(req.body)
   // console.log(data)
   data.restaurant = req.params.restaurantId
   // console.log('Writing to DB...')

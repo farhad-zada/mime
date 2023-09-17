@@ -8,8 +8,9 @@ require('dotenv').config()
 module.exports = catchAsync(async (req, res, next) => {
   const restaurant = await Restaurant.findById(
     req.params.restaurantId,
-  )
-  if (restaurant.owner !== req.user.id) {
+  ).select('+owner')
+  // console.log(restaurant.owner.toString() === req.user.id)
+  if (restaurant.owner.toString() !== req.user.id) {
     return next(
       new AppError('Not owner of the restaurant', 403),
     )

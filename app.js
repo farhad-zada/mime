@@ -7,13 +7,17 @@ const sanitizer = require('express-mongo-sanitize')
 const xss = require('xss-clean')
 const cookieParser = require('cookie-parser')
 
+//
+
 const restaurantRoutes = require('./routes/restaurantRoutes')
 const reviewRoutes = require(`${__dirname}/routes/reviewRoutes`)
 const userRoutes = require(`${__dirname}/routes/userRoutes`)
 const auth = require(`./controllers/auth/index`)
 const sessionRoutes = require(`${__dirname}/routes/sessionRoutes`)
+const rolesRoutes = require('./routes/rolesRoutes')
 const globalErrorHandler = require(`${__dirname}/controllers/errorController`)
 const AppError = require(`${__dirname}/utils/appError`)
+const mediaController = require('./controllers/media/index')
 
 const app = express()
 
@@ -33,15 +37,28 @@ const limiter = rateLimit({
 app.use('/', limiter)
 app.use(cookieParser())
 
-app.use('/app/v1/session/', sessionRoutes)
+// TODO: remove this fromhere. Because since it does not need to be logged in, it can be malused to crash the app
+// Allow the media to be sent only to authed endpoints
 
-app.use('/app/v1/user/', userRoutes)
+app.use(mediaController.multerFile)
 
+app.post('/image', (req, res, next) => {
+  console.log(req.files)
+  console.log(req.body)
+  res.json({ 1: 1 })
+})
+
+app.use('/api/v1/roles/', rolesRoutes)
+
+app.use('/api/v1/session/', sessionRoutes)
+
+app.use('/api/v1/user/', userRoutes)
+//TODO:  Need to remove this because when we send invalid request it does not show that the url is invalid
 app.use(auth.authentication.authed)
 
-app.use('/app/v1/restaurants', restaurantRoutes)
+app.use('/api/v1/restaurants', restaurantRoutes)
 app.use(
-  '/app/v1/reviews',
+  '/api/v1/reviews',
   auth.authorisation.restrict('admin-mime'),
   reviewRoutes,
 )

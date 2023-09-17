@@ -1,6 +1,7 @@
 const express = require('express')
 const auth = require(`../controllers/auth/index`)
 const user = require(`../controllers/userController`)
+const deletePreviousProfileImage = require('../utils/deletePreviousProfileImage')
 
 const router = express.Router()
 
@@ -20,7 +21,20 @@ router
 router
   .route('/updatePassword')
   .post(auth.authentication.updatePassword)
-//TODO: delete this
-// router.route('/deleteUser/:email').get(user.deleteUser)
+
+router
+  .route('/profile')
+  .post(
+    auth.authentication.authed,
+    user.uploadProfile,
+    deletePreviousProfileImage,
+    user.returnUpdatedUser,
+  )
+  .delete(
+    auth.authentication.authed,
+    user.deleteProfile,
+    deletePreviousProfileImage,
+    user.returnUpdatedUser,
+  )
 
 module.exports = router

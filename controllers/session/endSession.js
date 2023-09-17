@@ -1,5 +1,7 @@
 //TODO:
 
+// ATTENTION: only session_admin can end the session
+
 /**
  * 1. You are the session_admin
  * 1.1. End session for all
@@ -9,4 +11,6 @@
  * 1.2. End session only for yourself
  *  - a. You can pay as much as you want or not pay at all but you need to submit an adminship
  *       transfer request before you end your session and the requested person should accept your request
+ * 2. You are not session_admin
+ * 2.1. You can pay as much as you want or not pay at all and end the session for yourself
  */

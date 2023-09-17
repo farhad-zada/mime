@@ -1,8 +1,8 @@
 const express = require('express')
-const menuController = require(`${__dirname}/../controllers/menuController`)
+const menuController = require('./../controllers/menuController')
 const auth = require(`./../controllers/auth/index`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
-
+const media = require('../controllers/media/index')
 const router = express.Router({ mergeParams: true })
 
 /*
@@ -16,22 +16,38 @@ const router = express.Router({ mergeParams: true })
 
 */
 
+// router.route('/').get(menuController.getMenu).post(
+//   auth.authorisation.restaurantOwner,
+//   menuController.filterRequestData,
+//   menuController.addOne,
+//   //TODO: addMany
+// )
+
+/**
+ * addMany
+ */
+
 router
   .route('/')
-  .get(menuController.getMenu)
   .post(
     auth.authorisation.restaurantOwner,
-    menuController.filterRequestData,
-    menuController.addOne,
+    media.multerFile, // Here we multer after we check that it is the owner of the restaurant so if they are not they will not be able to send malicious data
+    menuController.parseItems, // We parse items and also set indexes of each image into req.body.images Object
+    menuController.checkItemsImages, // Here we check if all the files are image and set them into req.media.jpegs to be processed
+    menuController.uploadItemsImages, // Here we upload images to GS and get public URLs and also add them into menu items, e.g. req.body.items[i].image = publicURL
+    menuController.addMany, // Here we finally add all the items into DB
+  )
+  .patch(
+    auth.authorisation.restaurantOwner,
+    media.multerFile,
+    menuController.parseItems,
+    menuController.checkItemsImages,
+    menuController.uploadItemsImages,
   )
 
 router
   .route('/:itemId')
   .get(menuController.getOne)
-  .patch(
-    auth.authorisation.restaurantOwner,
-    menuController.updateOne,
-  )
   .delete(
     auth.authorisation.restaurantOwner,
     menuController.deleteOne,
@@ -40,3 +56,23 @@ router
 router.use('/:itemId/likes', likesRoutes)
 
 module.exports = router
+
+// TODO: delete
+
+// const req = [
+//   {
+//     name: 'CocaCola',
+//     price: '2.99',
+//     image: 'here will be the file',
+//   },
+//   {
+//     name: 'CocaCola',
+//     price: '2.99',
+//     image: 'here will be the file',
+//   },
+//   {
+//     name: 'CocaCola',
+//     price: '2.99',
+//     image: 'here will be the file',
+//   },
+// ]
