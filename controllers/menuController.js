@@ -1,10 +1,36 @@
 const MenuItem = require('../models/menuItemModel')
+const processJpegs = require('../utils/processJpegs')
 
 const AppError = require(`${__dirname}/../utils/appError`)
 
 const cathcAsync = require(`${__dirname}/../utils/catchAsync`)
 
-// Add an item
+// Add an items : done
+
+// Archive items : done
+
+// Delete an items : done
+
+// Add sections : done
+
+// Archive sections : done
+
+// Delete sections : done
+
+// Delete items/sections permanently : TODO:
+
+// Delete nested items/sections : TODO:
+
+const deletePreviousProfiles = async (urlToBeDeleted) => {
+  try {
+    const filePath = decodeURIComponent(
+      urlToBeDeleted.match(/mime-mime(.*)$/)[1],
+    )
+    return media.deleteGS(filePath)
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
 
 const menuSection = (data) => {
   const { name, section, isSection, period, belongs } = data
@@ -33,102 +59,6 @@ const menuItem = (data) => {
   } = data)
 }
 
-exports.filterRequestData = cathcAsync(
-  async (req, res, next) => {
-    req.body.belongs = req.params.restaurantId
-    if (!req.body.belongs) {
-      return next(
-        new AppError('Something went wrong!', 400),
-      )
-    }
-
-    let data
-    if (req.body.isSection) {
-      data = menuSection(req.body)
-    } else {
-      data = menuItem(req.body)
-    }
-    console.log({
-      belongs: data.belongs,
-      name: data.section,
-      period: data.period - 1,
-    })
-    const belongy = await MenuItem.findOne({
-      belongs: data.belongs,
-      name: data.section,
-      period: data.period - 1,
-    })
-
-    // console.log(belongy)
-    if (!belongy) {
-      return next(
-        new AppError(
-          `Invalid request data. Either section {${data.section}} or period {${data.period}} is wrong.`,
-          400,
-        ),
-      )
-    }
-    req.data = data
-    req.validate = !req.body.isSection
-    next()
-  },
-)
-
-exports.addMany = cathcAsync(async (req, res, next) => {
-  let items = req.body.items
-
-  // A section must be previously created before adding any items to it
-  const belongies = await Promise.all(
-    items.map((item) => {
-      // This returns promises and then we await them all
-      return MenuItem.findOne({
-        belongs: item.belongs,
-        name: item.section,
-        period: item.period - 1,
-      })
-    }),
-  )
-
-  // We check if all the items belongy sections are correct
-  belongies.forEach((belongy, i) => {
-    if (!belongy) {
-      return next(
-        new AppError(
-          `Invalid item data at index: ${i}. The specified section for this item not found. You need to first create that section.`,
-          400,
-        ),
-      )
-    }
-  })
-
-  items = items.map((item) => menuItem(item))
-
-  items = await Promise.all(
-    items.map((item) => MenuItem.create(item)),
-  )
-
-  res.status(200).json({
-    status: 'success',
-    results: items.length,
-    data: {
-      items,
-    },
-  })
-})
-
-exports.addOne = cathcAsync(async (req, res, next) => {
-  // console.log(req.data)
-  const result = await MenuItem(req.data).save({
-    validateBeforeSave: req.validate,
-  })
-  res.status(201).json({
-    status: 'success',
-    data: {
-      result,
-    },
-  })
-})
-
 //Get all period
 exports.getMenu = cathcAsync(async (req, res, next) => {
   const period = req.query.period * 1 || 1
@@ -148,53 +78,12 @@ exports.getMenu = cathcAsync(async (req, res, next) => {
   })
 })
 
-// Get only one item
-
+// Get only one item {Already been found by midFindById}
 exports.getOne = cathcAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
       item: req.menuItem,
-    },
-  })
-})
-
-// Remove an item
-
-exports.deleteOne = cathcAsync(async (req, res, next) => {
-  await MenuItem.findByIdAndDelete(req.params.itemId)
-
-  res.status(204).json({
-    message: 'Item deleted successfully',
-  })
-})
-// Update an itemd
-
-exports.updateOne = cathcAsync(async (req, res, next) => {
-  req.body.belongs = req.params.restaurantId
-
-  if (!req.body.belongs) {
-    return next(new AppError('Something went wrong!', 400))
-  }
-  const { isSection } = req.body
-  let result
-  // console.log(req.params.itemId)
-  if (isSection) {
-    result = await MenuItem.findByIdAndUpdate(
-      req.params.itemId,
-      menuSection(req.body),
-      { new: true },
-    )
-  } else {
-    result = await MenuItem.findByIdAndUpdate(
-      req.params.itemId,
-      menuItem(req.body),
-    )
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      result,
     },
   })
 })
@@ -227,6 +116,10 @@ exports.parseItems = cathcAsync(async (req, res, next) => {
 
 // Use proccessImges before this
 exports.checkItemsImages = cathcAsync(
+  /** Checking:
+   * 1. mimetype is __image__,
+   * 2. image has an original name
+   * */
   async (req, res, next) => {
     const images = req.files.menu
 
@@ -246,7 +139,7 @@ exports.checkItemsImages = cathcAsync(
           ),
         )
       }
-      const destination = `restaurant/menu/menuItem-${
+      const destination = `restaurant/menu/${
         req.params.restaurantId
       }-${Date.now()}.jpg`
       return {
@@ -262,6 +155,8 @@ exports.checkItemsImages = cathcAsync(
 
 exports.uploadItemsImages = cathcAsync(
   async (req, res, next) => {
+    // Proccess jpeg images
+    req = await processJpegs(req)
     const filesGS = []
 
     await Promise.all(
@@ -295,6 +190,65 @@ exports.uploadItemsImages = cathcAsync(
 )
 // Get all items ( by filter eg. ingreds contain)
 
+exports.addMany = cathcAsync(async (req, res, next) => {
+  let items = req.body.items
+  /**
+   * This code restricts new section and menu items to be created without a previous section exists
+   * So for now we do not use it
+  // A section must be previously created before adding any items to it
+  const belongies = await Promise.all(
+    items.map((item) => {
+      // This returns promises and then we await them all
+      return MenuItem.findOne({
+        belongs: item.belongs,
+        name: item.section,
+        period: item.period - 1,
+      })
+    }),
+  )
+
+  // We check if all the items belongy sections are correct
+  belongies.forEach((belongy, i) => {
+    if (!belongy) {
+      return next(
+        new AppError(
+          `Invalid item data at index: ${i}. The specified section for this item not found. You need to first create that section.`,
+          400,
+        ),
+      )
+    }
+  })
+   */
+
+  items = items.map((item) => {
+    if (item.isSection) {
+      return menuSection(item)
+    } else {
+      return menuItem(item)
+    }
+  })
+
+  items = await Promise.all(
+    items.map((item) => {
+      if (item.isSection) {
+        return new MenuItem(item).save({
+          validateBeforeSave: false,
+        })
+      } else {
+        return MenuItem.create(item)
+      }
+    }),
+  )
+
+  res.status(200).json({
+    status: 'success',
+    results: items.length,
+    data: {
+      items,
+    },
+  })
+})
+
 exports.updateMany = cathcAsync(async (req, res, next) => {
   let items = req.body.items
 
@@ -324,7 +278,7 @@ exports.updateMany = cathcAsync(async (req, res, next) => {
 
   let menuItems = []
 
-  items = items.map((item, i) => {
+  items = items.map((item) => {
     const data = menuItem(item)
     const menuItem = MenuItem.findById(item.id)
 
@@ -344,13 +298,17 @@ exports.updateMany = cathcAsync(async (req, res, next) => {
         }
         return menuItems[i].save(item)
       } else {
-        errors.push(`index: ${i} not found`)
+        errors.push(`index: ${i} not found`) // In the front end it can be found to be which item
       }
     }),
   )
 
   // Here we send a request to the GS to delete this files
-  urlsToBeDeleted.map((url) => deletePreviousProfiles(url))
+  await Promise.all(
+    urlsToBeDeleted.map((url) =>
+      deletePreviousProfiles(url),
+    ),
+  ) // TODO: we can implement mass delete for Google Storage
 
   res.status(200).json({
     status: 'success',
@@ -367,13 +325,44 @@ exports.midFindById = cathcAsync(async (req, res, next) => {
   next()
 })
 
-const deletePreviousProfiles = async (urlToBeDeleted) => {
-  try {
-    const filePath = decodeURIComponent(
-      urlToBeDeleted.match(/mime-mime(.*)$/)[1],
-    )
-    return media.deleteGS(filePath)
-  } catch (err) {
-    throw new Error(err.message)
-  }
-}
+exports.deleteMany = cathcAsync(async (req, res, next) => {
+  const menuItems = await Promise.all(
+    req.body.itemIds.map((id) => MenuItem.findById(id)),
+  )
+
+  await Promise.all(
+    menuItems.map((item) =>
+      item.save({ status: 'deleted' }),
+    ),
+  )
+  return res.status(201).json({})
+})
+
+exports.deleteOne = cathcAsync(async (req, res, next) => {
+  const item = await MenuItem.findById(req.params.itemId)
+  // TODO: Delete documents that belong to the section
+  await item.save({ status: 'deleted' })
+
+  return res.status(201).json({})
+})
+
+exports.archiveMany = cathcAsync(async (req, res, next) => {
+  const menuItems = await Promise.all(
+    req.body.itemIds.map((id) => MenuItem.findById(id)),
+  )
+
+  await Promise.all(
+    menuItems.map((item) =>
+      item.save({ status: 'archived' }),
+    ),
+  )
+  return res.status(201).json({})
+})
+
+exports.archiveOne = cathcAsync(async (req, res, next) => {
+  const item = await MenuItem.findById(req.params.itemId)
+
+  item.save({ status: 'archived' })
+
+  return res.status(201).json({})
+})

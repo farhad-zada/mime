@@ -89,12 +89,26 @@ const menuItemSchema = mongoose.Schema(
       ],
       default: undefined,
     },
+    discount: Number,
+    discountEnds: Date,
+    status: {
+      type: String,
+      enum: ['active', 'deleted', 'archived'],
+      default: 'active',
+    },
   },
   {
     toJson: { virtuals: true },
     toObject: { virtuals: true },
   },
 )
+
+//check
+
+menuItemSchema.pre(/find/, function (next) {
+  this.find({ status: 'active' })
+  next()
+})
 
 const MenuItem = mongoose.model('Menu', menuItemSchema)
 

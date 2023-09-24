@@ -4,6 +4,7 @@ const auth = require(`./../controllers/auth/index`)
 const likesRoutes = require(`${__dirname}/../routes/likesRoutes`)
 const media = require('../controllers/media/index')
 const router = express.Router({ mergeParams: true })
+const reviewRoutes = require(`./../routes/reviewRoutes`)
 
 /*
 1. Protection
@@ -24,7 +25,11 @@ const router = express.Router({ mergeParams: true })
 // )
 
 /**
- * addMany
+ * addItems
+ * updateItems
+ * implementDiscount
+ *
+ * implement Discoun by Section
  */
 
 router
@@ -44,6 +49,10 @@ router
     menuController.checkItemsImages,
     menuController.uploadItemsImages,
   )
+  .delete(
+    auth.authorisation.restaurantOwner,
+    menuController.deleteMany,
+  )
 
 router
   .route('/:itemId')
@@ -54,6 +63,7 @@ router
   )
 
 router.use('/:itemId/likes', likesRoutes)
+router.use('/:itemId/reviews', reviewRoutes)
 
 module.exports = router
 
